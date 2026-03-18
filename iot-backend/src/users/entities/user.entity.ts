@@ -14,7 +14,7 @@ export class User {
     @Column({unique: true})
     username: string; 
 
-    @Column()
+    @Column({ select: false }) //da se ne salje u GET odgovorima
     password: string; 
 
     @Column({unique: true})
