@@ -2,8 +2,10 @@ import { Sensor } from "src/sensors/entities/sensor.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum AlarmSeverity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
   CRITICAL = 'CRITICAL',
-  WARNING = 'WARNING',
 }
 
 @Entity()
