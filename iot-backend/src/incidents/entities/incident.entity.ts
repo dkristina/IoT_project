@@ -22,7 +22,7 @@ export class Incident {
     @CreateDateColumn()
     createdAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'timestamptz' })
     resolvedAt: Date;
 
     @ManyToOne(() => User, (u) => u.incidents, {nullable: true})

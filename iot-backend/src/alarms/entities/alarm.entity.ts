@@ -14,7 +14,7 @@ export class Alarm {
     @Column('float')
     lowThreshold: number; 
 
-    @Column()
+    @Column('float')
     highThreshold: number;
 
     @Column({ type: 'enum', enum: AlarmSeverity, default: AlarmSeverity.CRITICAL })
