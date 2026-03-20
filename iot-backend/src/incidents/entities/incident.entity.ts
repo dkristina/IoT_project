@@ -1,3 +1,4 @@
+import { AlarmSeverity } from "src/alarms/entities/alarm.entity";
 import { Sensor } from "src/sensors/entities/sensor.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -16,6 +17,10 @@ export class Incident {
     @Column()
     description: string;
 
+    //prepisuje nivo ozbiljnosti iz Alarma kada se problem desi 
+    @Column({ type: 'enum', enum: AlarmSeverity }) 
+    severity: AlarmSeverity;
+    
     @Column({ type: 'enum', enum: IncidentStatus, default: IncidentStatus.NEW })
     status: IncidentStatus;
 
