@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
 import { CreateIncidentDto } from './dto/create-incident.dto';
 import { UpdateIncidentDto } from './dto/update-incident.dto';
@@ -8,27 +8,27 @@ export class IncidentsController {
   constructor(private readonly incidentsService: IncidentsService) {}
 
   @Post()
-  create(@Body() createIncidentDto: CreateIncidentDto) {
+  async create(@Body() createIncidentDto: CreateIncidentDto) {
     return this.incidentsService.create(createIncidentDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.incidentsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.incidentsService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.incidentsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIncidentDto: UpdateIncidentDto) {
-    return this.incidentsService.update(+id, updateIncidentDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateIncidentDto: UpdateIncidentDto) {
+    return this.incidentsService.update(id, updateIncidentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.incidentsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.incidentsService.remove(id);
   }
 }
