@@ -8,27 +8,18 @@ export class MeasurementsController {
   constructor(private readonly measurementsService: MeasurementsService) {}
 
   @Post()
-  create(@Body() createMeasurementDto: CreateMeasurementDto) {
-    return this.measurementsService.create(createMeasurementDto);
+  async create(@Body() createMeasurementDto: CreateMeasurementDto) {
+    return await this.measurementsService.create(createMeasurementDto);
   }
 
   @Get()
-  findAll() {
-    return this.measurementsService.findAll();
+  async findAll() {
+    return await this.measurementsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.measurementsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.measurementsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMeasurementDto: UpdateMeasurementDto) {
-    return this.measurementsService.update(+id, updateMeasurementDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.measurementsService.remove(+id);
-  }
 }
