@@ -64,4 +64,16 @@ export class IncidentsService {
     await this.incidentsRepository.remove(incident);
     return { message: `Incident #${id} successfully removed` };
   }
+
+  //automatsko kreiranje incidenata ( sistem )
+  async createFromMeasurement(measurement: any, alarm: any): Promise<Incident> {
+    const incident = this.incidentsRepository.create({
+      description: `System generated alarm: Value ${measurement.value} is out of range (${alarm.lowThreshold} - ${alarm.highThreshold}).`,
+      severity: alarm.severity, 
+      status: IncidentStatus.NEW, 
+      sensor: {id: measurement.sensorId} as any,
+    })
+
+    return await this.incidentsRepository.save(incident);
+  }
 }
