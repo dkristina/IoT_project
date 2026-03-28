@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateIncidentDto } from './dto/create-incident.dto';
 import { UpdateIncidentDto } from './dto/update-incident.dto';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Incident, IncidentStatus } from './entities/incident.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -76,4 +76,13 @@ export class IncidentsService {
 
     return await this.incidentsRepository.save(incident);
   }
+
+  async findActiveBySensor(sensorId: number): Promise<Incident | null> {
+  return await this.incidentsRepository.findOne({
+    where: {
+      sensor: { id: sensorId },
+      status: Not(IncidentStatus.RESOLVED) //sve sto nije "reseno" se smatra aktivnim
+    }
+  });
+}
 }
