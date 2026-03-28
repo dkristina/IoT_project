@@ -18,51 +18,61 @@ export class MeasurementsService {
   ){}
 
   async create(createMeasurementDto: CreateMeasurementDto): Promise<Measurement> {
+    //provera da li postoj senzor
     const sensor = await this.measurementsRepository.manager.findOne('Sensor', {
-      where: { id: createMeasurementDto.sensorId }
+      where: { id: createMeasurementDto.sensorId },
     });
 
     if (!sensor) {
       throw new NotFoundException(`Sensor with ID ${createMeasurementDto.sensorId} not found.`);
     }
-    
-    //snimanje novog merenja
+
+    //snimanje merenja u bazu
     const measurement = this.measurementsRepository.create(createMeasurementDto);
     const saved = await this.measurementsRepository.save(measurement);
 
-    //dobavljenje definisahin pravila (alarma) za taj senzor
+    //OPTIMIZACIJA: Uzimamo poslednja 3 merenja SAMO JEDNOM ovde
+    const lastThree = await this.measurementsRepository.find({
+      where: { sensorId: createMeasurementDto.sensorId },
+      order: { timestamp: 'DESC' },
+      take: 3,
+    });
+
+    //dobavljanje alarma za taj senzor
     const alarms = await this.alarmsService.findBySensor(createMeasurementDto.sensorId);
 
-    //iteracija kroz svaki alarm
-    for (const alarm of alarms)
-    {
+    for (const alarm of alarms) {
       const isOutOfBounds = saved.value > alarm.highThreshold || saved.value < alarm.lowThreshold;
 
-      if(isOutOfBounds) {
-        //ako je CRITICAL -> odmah incident 
-        if(alarm.severity === AlarmSeverity.CRITICAL)
-        {
-          await this.incidentsService.createFromMeasurement(saved, alarm); 
+      if (isOutOfBounds) {
+        //ANTI-SPAM: proveravamo da li vec postoji otvoren incident
+        //ako postoji, ne idemo dalje u kreiranje novog
+        const activeIncident = await this.incidentsService.findActiveBySensor(createMeasurementDto.sensorId);
+        
+        if (activeIncident) {
+          console.log(`[INFO] An active incident already exists for sensor ${createMeasurementDto.sensorId}. I'm skipping.`);
+          continue; 
         }
-        //logika za LOW, MEDIUM, HIGH -> provera 3 u nizu
-        else {
-          const lastThree = await this.measurementsRepository.find({
-            where: {sensorId: createMeasurementDto.sensorId}, 
-            order: {timestamp: 'DESC'}, 
-            take: 3,
-          }); 
 
+        //LOGIKA: Critical (odmah) vs Ostali (3 u nizu)
+        if (alarm.severity === AlarmSeverity.CRITICAL) {
+          console.log(`[ALERT] Critical alarm detected!`);
+          await this.incidentsService.createFromMeasurement(saved, alarm);
+        } else {
+          // Provera 3 u nizu koristeci 'lastThree' koji smo gore izvukli
           const allThreeBad = lastThree.length === 3 && lastThree.every(m => 
             m.value > alarm.highThreshold || m.value < alarm.lowThreshold
           );
 
           if (allThreeBad) {
+            console.log(`[ALERT] 3-in-a-row alarm detected!`);
             await this.incidentsService.createFromMeasurement(saved, alarm);
           }
         }
       }
     }
-    return saved; 
+
+    return saved;
   }
 
   async findAll(): Promise<Measurement[]> {
