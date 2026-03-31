@@ -4,12 +4,14 @@ import { UpdateIncidentDto } from './dto/update-incident.dto';
 import { Not, Repository } from 'typeorm';
 import { Incident, IncidentStatus } from './entities/incident.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IotGateway } from 'src/gateways/iot.gateway';
 
 @Injectable()
 export class IncidentsService {
   constructor(
     @InjectRepository(Incident)
     private readonly incidentsRepository: Repository<Incident>,
+    private readonly iotGateway: IotGateway,
   ){}
 
   async create(createIncidentDto: CreateIncidentDto): Promise<Incident> {
@@ -54,9 +56,11 @@ export class IncidentsService {
     }
 
     Object.assign(incident, updateIncidentDto); 
-    await this.incidentsRepository.save(incident); 
+    const updated = await this.incidentsRepository.save(incident); 
+
+    this.iotGateway.sendIncidentAlert(updated);
     
-    return await this.findOne(id); 
+    return updated; 
   }
 
   async remove(id: number): Promise<{ message: string }> {
@@ -82,7 +86,9 @@ export class IncidentsService {
     where: {
       sensor: { id: sensorId },
       status: Not(IncidentStatus.RESOLVED) //sve sto nije "reseno" se smatra aktivnim
-    }
+    },
+    relations: ['sensor'],
+    order: { id: 'DESC' }
   });
 }
 }
