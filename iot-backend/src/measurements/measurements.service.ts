@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { AlarmsService } from 'src/alarms/alarms.service';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { AlarmSeverity } from 'src/alarms/entities/alarm.entity';
+import { IotGateway } from 'src/gateways/iot.gateway';
 
 @Injectable()
 export class MeasurementsService {
@@ -15,6 +16,7 @@ export class MeasurementsService {
 
     private readonly alarmsService: AlarmsService, //da proveri da li merenje krsi neko pravilo
     private readonly incidentsService: IncidentsService, //da prijavi problem
+    private readonly iotGateway: IotGateway,
   ){}
 
   async create(createMeasurementDto: CreateMeasurementDto): Promise<Measurement> {
@@ -30,6 +32,9 @@ export class MeasurementsService {
     //snimanje merenja u bazu
     const measurement = this.measurementsRepository.create(createMeasurementDto);
     const saved = await this.measurementsRepository.save(measurement);
+
+    //posalji merenje na WebSocket cim se sacuva
+    this.iotGateway.sendMeasurementUpdate(saved);
 
     //OPTIMIZACIJA: Uzimamo poslednja 3 merenja SAMO JEDNOM ovde
     const lastThree = await this.measurementsRepository.find({
@@ -57,7 +62,10 @@ export class MeasurementsService {
         //LOGIKA: Critical (odmah) vs Ostali (3 u nizu)
         if (alarm.severity === AlarmSeverity.CRITICAL) {
           console.log(`[ALERT] Critical alarm detected!`);
-          await this.incidentsService.createFromMeasurement(saved, alarm);
+          const newIncident = await this.incidentsService.createFromMeasurement(saved, alarm); 
+
+          //posalji incident na WebSocket
+          this.iotGateway.sendIncidentAlert(newIncident); 
         } else {
           // Provera 3 u nizu koristeci 'lastThree' koji smo gore izvukli
           const allThreeBad = lastThree.length === 3 && lastThree.every(m => 
@@ -66,7 +74,9 @@ export class MeasurementsService {
 
           if (allThreeBad) {
             console.log(`[ALERT] 3-in-a-row alarm detected!`);
-            await this.incidentsService.createFromMeasurement(saved, alarm);
+            const newIncident = await this.incidentsService.createFromMeasurement(saved, alarm);
+
+            this.iotGateway.sendIncidentAlert(newIncident); 
           }
         }
       }

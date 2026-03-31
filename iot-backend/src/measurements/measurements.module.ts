@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Measurement } from './entities/measurement.entity';
 import { AlarmsModule } from 'src/alarms/alarms.module';
 import { IncidentsModule } from 'src/incidents/incidents.module';
+import { IotGateway } from 'src/gateways/iot.gateway';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { IncidentsModule } from 'src/incidents/incidents.module';
     IncidentsModule,
   ],
   controllers: [MeasurementsController],
-  providers: [MeasurementsService],
+  providers: [MeasurementsService, IotGateway],
+  exports: [IotGateway],
 })
 export class MeasurementsModule {}
