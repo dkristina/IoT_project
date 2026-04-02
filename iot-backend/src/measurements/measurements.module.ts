@@ -6,15 +6,18 @@ import { Measurement } from './entities/measurement.entity';
 import { AlarmsModule } from 'src/alarms/alarms.module';
 import { IncidentsModule } from 'src/incidents/incidents.module';
 import { IotGateway } from 'src/gateways/iot.gateway';
+import { GatewaysModule } from 'src/gateways/gateways.module';
+import { SensorsModule } from 'src/sensors/sensors.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Measurement]),
     AlarmsModule, 
-    IncidentsModule,
+    IncidentsModule, 
+    SensorsModule,
+    GatewaysModule,
   ],
   controllers: [MeasurementsController],
-  providers: [MeasurementsService, IotGateway],
-  exports: [IotGateway],
+  providers: [MeasurementsService],
 })
 export class MeasurementsModule {}

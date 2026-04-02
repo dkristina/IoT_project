@@ -7,12 +7,16 @@ import { AlarmsService } from 'src/alarms/alarms.service';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { AlarmSeverity } from 'src/alarms/entities/alarm.entity';
 import { IotGateway } from 'src/gateways/iot.gateway';
+import { Sensor } from 'src/sensors/entities/sensor.entity';
 
 @Injectable()
 export class MeasurementsService {
   constructor(
     @InjectRepository(Measurement)
     private readonly measurementsRepository: Repository<Measurement>, 
+
+    @InjectRepository(Sensor)
+    private readonly sensorsRepository: Repository<Sensor>,
 
     private readonly alarmsService: AlarmsService, //da proveri da li merenje krsi neko pravilo
     private readonly incidentsService: IncidentsService, //da prijavi problem
@@ -21,7 +25,7 @@ export class MeasurementsService {
 
   async create(createMeasurementDto: CreateMeasurementDto): Promise<Measurement> {
     //provera da li postoj senzor
-    const sensor = await this.measurementsRepository.manager.findOne('Sensor', {
+    const sensor = await this.sensorsRepository.findOne({
       where: { id: createMeasurementDto.sensorId },
     });
 

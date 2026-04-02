@@ -8,6 +8,6 @@ import { Sensor } from './entities/sensor.entity';
   imports: [TypeOrmModule.forFeature([Sensor])],
   controllers: [SensorsController],
   providers: [SensorsService],
-  exports: [SensorsService]
+  exports: [SensorsService, TypeOrmModule]
 })
 export class SensorsModule {}
