@@ -82,9 +82,12 @@ export class UsersService {
   }
 
   //7.
-  async update(id: number, updateUserDto: UpdateUserDto): Promise <User> {
+  async update(id: number, updateUserDto: UpdateUserDto, requesterRole: UserRole): Promise <User> {
     const user = await this.findOne(id); 
 
+    if (requesterRole !== UserRole.ADMIN && updateUserDto.role) {
+      delete updateUserDto.role; 
+  }
     //provera jedinstvenosti
     if (updateUserDto.email || updateUserDto.username) {
       const existing = await this.usersRepository.findOne({
