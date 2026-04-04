@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateMeasurementDto } from './dto/create-measurement.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Measurement } from './entities/measurement.entity';
