@@ -12,6 +12,7 @@ import { Sensor } from './sensors/entities/sensor.entity';
 import { Alarm } from './alarms/entities/alarm.entity';
 import { Measurement } from './measurements/entities/measurement.entity';
 import { Incident } from './incidents/entities/incident.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Incident } from './incidents/entities/incident.entity';
 
     }),
     UsersModule,
+    AuthModule,
     AlarmsModule,
     SensorsModule,
     MeasurementsModule,
