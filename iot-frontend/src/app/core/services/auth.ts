@@ -1,29 +1,76 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { User } from '../models/user.model'; 
+import { Router } from '@angular/router';
+
+//opisuje kako backend odgovara na login 
+interface LoginResponse {
+  access_token: string;
+  user: User;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private http = inject(HttpClient);
-  // Putanja do tvog login endpoint-a na backendu
   private apiUrl = 'http://localhost:3000/auth/login';
+  private router = inject(Router);
+  
+  // BehaviorSubject koji cuva trenutnog korisnika
+  // Na početku je null, a kasnije dobija podatke
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  
+  // Observable koji će komponente (npr. Navbar) "slušati"
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  login(credentials: any): Observable<any> {
-    // saljemo post zahtev sa username i password
-    return this.http.post(this.apiUrl, credentials).pipe(
-      tap((res: any) => {
-        // Automatski cuvamo token cim stigne sa servera
+  constructor() {
+    this.checkUserStatus();
+    
+  }
+
+  // Provera pri osvezavanju stranice (F5)
+  private checkUserStatus() {
+    const token = localStorage.getItem('access_token');
+    const userData = localStorage.getItem('user_data');
+    
+    if (token && userData) {
+      // Ako imamo i token i sacuvane podatke, samo ih emitujemo u tok
+      this.currentUserSubject.next(JSON.parse(userData));
+    }
+  }
+
+  login(credentials: { username: string; pass: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
+      tap((res) => {
         if (res && res.access_token) {
           localStorage.setItem('access_token', res.access_token);
+          
+          //backend vec vraca lep 'user' objekat (fullName, role, itd.)
+          //Bolje je da sacuvamo njega
+          const userData = res.user;
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          
+          // Emitujemo podatke kroz BehaviorSubject
+          this.currentUserSubject.next(userData);
         }
       })
     );
   }
 
-  // Pomocna metoda za logout
+  // Logout metoda
   logout() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('user_data');
+    this.currentUserSubject.next(null);
+    
+    this.router.navigate(['/login']);
+  }
+
+  // Pomocna metoda za proveru uloge (trebace nam za sakrivanje dugmića)
+  hasRole(role: string): boolean {
+    const user = this.currentUserSubject.value;
+    return user ? user.role === role : false;
   }
 }
