@@ -1,3 +1,7 @@
+import { Alarm } from "./alarm.model";
+import { Incident } from "./incident.model";
+import { Measurement } from "./measurement.model";
+
 export enum SensorUnit {
   CELSIUS = '°C',
   PERCENTAGE = '%',
@@ -10,6 +14,7 @@ export interface Sensor {
     name: string; 
     location: string; 
     unit: SensorUnit; 
-    alarms?: any[]; 
-    measurements?: any[]; 
+    measurements?: Measurement[];
+    alarms?: Alarm[];
+    incidents?: Incident[];
 }
