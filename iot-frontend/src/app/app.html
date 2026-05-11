@@ -1,1 +1,5 @@
-<router-outlet></router-outlet>
+<app-navbar *ngIf="!(isLoginPage$ | async) && (authService.currentUser$ | async)"></app-navbar>
+
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>

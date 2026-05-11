@@ -44,11 +44,6 @@ export class LoginComponent {
         this.isLoading = false; 
         console.log('Login uspešan!', res); 
 
-        
-        if (res.user) {
-          alert('Uspešna prijava! Dobrodošli: ' + res.user.fullName);
-        }
-
         // PREBACIVANJE NA DASHBOARD
         this.router.navigate(['/dashboard']); 
       },
@@ -62,7 +57,7 @@ export class LoginComponent {
         }
         
         console.error('Greška pri prijavi:', err);
-        this.cdr.detectChanges(); // Forsiramo osvežavanje ekrana za error poruku
+        this.cdr.detectChanges(); 
       }
     });
   }

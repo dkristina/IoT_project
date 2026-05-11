@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0b111e;
+}
+
+.container {
+  padding: 20px;
+  max-width: 1600px; 
+  margin: 0 auto;
+  color: #e5e7eb;
+}
+
+/* TOP INFO BAR */
+.top-info-bar {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  padding: 12px 20px !important;
+  background: #161f2e !important;
+  border: 1px solid #1f2937;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+
+  .bar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .main-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .title-text {
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+       color: #ffffff !important;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  .quick-info {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      mat-icon {
+        color: #3b82f6;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      label {
+        display: block;
+        font-size: 10px;
+        color: #9ca3af;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+/* TRI KOLONE LAYOUT */
+.dashboard-three-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr; // Istorija (treća kolona) je malo šira zbog tabele
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr 1fr; // Na srednjim ekranima 2 kolone
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr; // Na mobilnom 1 kolona
+  }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 400px;
+}
+
+/* STATUS BADGE */
+.status-badge {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #1f2937;
+  color: #9ca3af;
+
+  &.active {
+   background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+}
+
+/* GLASS CARD (Zajednički stil) */
+.glass-card {
+  background: #161f2e !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  border: 1px solid #1f2937 !important;
+  color: #e5e7eb !important;
+
+  .mat-mdc-card-header .mat-mdc-card-title {
+    color: #ffffff !important;
+    opacity: 0.7;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+/* SPINNER */
+.center-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  gap: 15px;
+}
+

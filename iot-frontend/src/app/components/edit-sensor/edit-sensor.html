@@ -1,0 +1,55 @@
+@if (authService.isAdmin()) {
+<div class="edit-container">
+  <div class="edit-card">
+    <div class="edit-header">
+      <div class="icon-circle">
+        <span class="material-icons">edit</span>
+      </div>
+      <h2>Izmeni Senzor</h2>
+    </div>
+
+    <form (ngSubmit)="updateSensor()" #editForm="ngForm">
+      <div class="form-body">
+        <div class="form-group">
+          <label>NAZIV</label>
+          <input 
+            [(ngModel)]="sensorData.name" 
+            name="name" 
+            placeholder="Unesite naziv..."
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>LOKACIJA</label>
+          <input 
+            [(ngModel)]="sensorData.location" 
+            name="location" 
+            placeholder="Unesite lokaciju..."
+            required>
+        </div>
+
+        <div class="form-group">
+          <label>MERNA JEDINICA</label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="sensorData.unit" name="unit" required>
+              <option value="" disabled selected>Izaberite jedinicu</option>
+              <option *ngFor="let t of sensorTypes" [value]="t.value">
+                {{ t.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn-cancel" (click)="close()">
+          Otkaži
+        </button>
+        <button type="submit" class="btn-save" [disabled]="!editForm.valid">
+          Sačuvaj izmene
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

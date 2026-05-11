@@ -1,0 +1,30 @@
+<nav class="top-nav" *ngIf="authService.currentUser$ | async as user">
+  <div class="nav-content">
+    <div class="logo-section">
+      <span class="logo-icon">🛰️</span>
+      <span class="logo-text">IoT <span class="highlight">System</span></span>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a>
+      <a routerLink="/sensors" routerLinkActive="active-link">Senzori</a>
+      <a routerLink="/incidents" routerLinkActive="active-link">Incidenti</a>
+      <a routerLink="/alarms" routerLinkActive="active-link">Alarmi</a>
+      <a routerLink="/users" routerLinkActive="active">Korisnici</a>
+    </div>
+
+    <div class="user-section">
+      <div class="user-info-card" routerLink="/profile" style="cursor: pointer;">
+        <mat-icon style="margin-right: 8px;">person</mat-icon>
+        <div class="user-details">
+          <span class="u-name">{{ user.username }}</span>
+          <span class="u-role">{{ user.role }}</span>
+        </div>
+      </div>
+      
+      <button class="logout-pill" (click)="onLogout()">
+        Odjavi se
+      </button>
+    </div>
+  </div>
+</nav>

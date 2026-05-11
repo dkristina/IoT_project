@@ -1,0 +1,101 @@
+<div class="dashboard-wrapper">
+  
+  <ng-container *ngIf="stats$ | async as stats">
+    
+    <div *ngIf="stats.loading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Sistem se pokreće...</p>
+    </div>
+
+    <ng-container *ngIf="!stats.loading">
+      
+      <header class="welcome-header" *ngIf="authService.currentUser$ | async as user">
+        <div class="user-info">
+          <h1>Kontrolna tabla</h1>
+          <p class="date-today">{{ today | date:'fullDate' }}</p>
+        </div>
+        <span class="role-badge" [ngClass]="user.role.toLowerCase()">
+          {{ user.role }}
+        </span>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="icon">📡</div>
+          <div class="info">
+            <span class="label">Senzori</span>
+            <span class="value">{{ stats.totalSensors }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card orange" [ngClass]="{'pulse': stats.activeIncidents > 0}">
+          <div class="icon">⚠️</div>
+          <div class="info">
+            <span class="label">Aktivni Incidenti</span>
+            <span class="value">{{ stats.activeIncidents }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card red" [ngClass]="{'dimmed': stats.criticalIncidents === 0, 'pulse': stats.criticalIncidents > 0}">
+          <div class="icon">🔥</div>
+          <div class="info">
+            <span class="label">Kritično</span>
+            <span class="value">{{ stats.criticalIncidents }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card green">
+          <div class="icon">✅</div>
+          <div class="info">
+            <span class="label">Stabilno</span>
+            <span class="value">{{ stats.stableSystems }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-content-grid">
+        
+        <div class="chart-container-card">
+          <h3>Distribucija alarma</h3>
+          <div class="canvas-wrapper">
+            <canvas baseChart
+              [data]="doughnutChartData"
+              [options]="doughnutChartOptions"
+              [type]="doughnutChartType">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="activity-feed-card">
+          <h3>Poslednje aktivnosti</h3>
+          <div class="activity-list">
+            <div *ngFor="let item of recentIncidents$ | async" class="activity-item">
+              <div class="unit-badge">{{ getUnitIcon(item.sensor?.unit) }}</div>
+              
+              <div class="activity-info">
+                <p class="desc">{{ item.description }}</p>
+                <div class="meta-row">
+                  <small>{{ item.sensor?.name }} • {{ item.createdAt | date:'HH:mm' }}h</small>
+                  
+                  <span *ngIf="item.assignedTo" class="assigned-user">
+                      👤 {{ item.assignedTo.username || item.assignedTo }}
+                  </span>
+                </div>
+              </div>
+
+              <span class="sev-tag" [ngClass]="item.severity.toLowerCase()">
+                {{ item.severity }}
+              </span>
+            </div>
+
+            <div *ngIf="(recentIncidents$ | async)?.length === 0" class="no-data">
+              Nema zabeleženih aktivnosti.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </ng-container>
+  </ng-container>
+</div>

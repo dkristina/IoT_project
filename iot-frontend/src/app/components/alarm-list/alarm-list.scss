@@ -1,0 +1,102 @@
+@use "sass:color";
+
+$severity-colors: (
+  "critical": #ff4d4d,
+  "high": #ff944d,
+  "medium": #ffdb4d,
+  "low": #4dff88
+);
+
+.alarms-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #0b111e;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+   border-bottom: 1px solid #1f2937;
+    padding-bottom: 15px;
+
+    h2 { margin: 0; color: #ffffff; font-family: sans-serif; }
+
+  }
+
+  .alarms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+
+    .alarm-card {
+      background: #161f2e;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #1f2937;
+      border-top: 5px solid #ccc; 
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+
+      &:hover { transform: translateY(-5px); border-color: #3b82f6; }
+
+      @each $name, $color in $severity-colors {
+        &.severity-#{$name} {
+          border-top-color: $color;
+          .status-badge { 
+            // Koristimo color.change za alpha kanal umesto rgba
+            background-color: color.change($color, $alpha: 0.1); 
+            color: color.adjust($color, $lightness: -20%);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+          }
+        }
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        span { font-weight: bold; color: #ffffff }
+      }
+
+      .card-body {
+        p { margin: 5px 0; color: #9ca3af; }
+      }
+
+      .btn-delete {
+        margin-top: auto;
+        background: #0b111e !important; /* Tamna boja kao pozadina stranice */
+        color: #9ca3af !important;      /* Sivi tekst, neupadljiv */
+        border: 1px solid #374151 !important; /* Diskretan border */
+        padding: 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #1f2937 !important; /* Malo svetlija siva na hover */
+          color: #ffffff !important;      /* Bela slova na hover */
+          border-color: #3b82f6 !important; /* Plavi border da znaš šta brišeš */
+        }
+      }
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 60px;
+    background: #161f2e;
+    border-radius: 12px;
+    border: 1px solid #1f2937;
+    color: #9ca3af;
+  }
+}

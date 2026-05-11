@@ -1,0 +1,46 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="close.emit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Dodaj novog korisnika</h2>
+      <button type="button" class="btn-close" (click)="close.emit()">×</button>
+    </div>
+
+    <form [formGroup]="userForm" (ngSubmit)="submit()">
+      <div class="form-body">
+        <div class="input-group">
+          <label>Ime i prezime</label>
+          <input formControlName="fullName" type="text" placeholder="Ime i prezime">
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Korisničko ime</label>
+            <input formControlName="username" type="text" placeholder="username">
+          </div>
+          <div class="input-group">
+            <label>Uloga</label>
+            <select formControlName="role">
+              <option value="ADMIN">ADMIN</option>
+              <option value="OPERATOR">OPERATOR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Email adresa</label>
+          <input formControlName="email" type="email" placeholder="email@example.com">
+        </div>
+
+        <div class="input-group">
+          <label>Lozinka (min. 6 karaktera)</label>
+          <input formControlName="password" type="password" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="close.emit()">Otkaži</button>
+        <button type="submit" class="btn-primary" [disabled]="userForm.invalid">Kreiraj nalog</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,165 @@
+$navbar-height: 70px;
+
+.dashboard-container {
+  padding: 0; // Sklanjamo padding odavde da bi grid išao od ivice do ivice ako treba
+  background: #0b111e;
+  color: #e5e7eb;
+  
+  // OVO JE KLJUČNO: Kontejner zauzima preostali prostor na ekranu
+  
+  display: flex;
+  flex-direction: column; // Ređamo zaglavlje pa grid jedno ispod drugog
+  
+}
+
+header {
+  padding: 1.5rem 2rem; // Vraćamo padding ovde
+  border-bottom: 1px solid #1f2937;
+  background: #0b111e; // Da se ne providi grid ispod njega
+  flex-shrink: 0; // Ne dozvoljavamo zaglavlju da se skuplja
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+
+
+.incident-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 2rem; // Dodatni prostor na dnu da poslednja kartica ne "lepi"
+}
+
+
+.incident-card {
+  background: #161f2e;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  border: 1px solid #1f2937;
+  position: relative;
+  overflow: hidden;
+
+  &.critical {
+    border-top: 4px solid #ef4444;
+    animation: pulse-border 2s infinite;
+  }
+
+  &.status-in_progress { border-top: 4px solid #3b82f6; }
+  &.status-resolved { opacity: 0.6; filter: grayscale(0.5); }
+
+  .severity-badge {
+    background: #374151;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+
+  .assignment-box {
+    margin: 1rem 0;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+  }
+
+  .btn-claim {
+    width: 100%;
+    background: #3b82f6;
+    border: none;
+    color: white;
+    padding: 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    &:hover { background: #2563eb; }
+  }
+
+  .btn-resolve {
+    background: #10b981;
+    border: none;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover { background: #059669; }
+  }
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.resolved-check {
+  color: #10b981;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-resolved {
+  .card-body, .card-header {
+    opacity: 0.5; // Malo "ugasimo" karticu jer više nije hitna
+  }
+}
+
+.operator-tag {
+  display: flex;
+  align-items: center; 
+  gap: 10px;
+  
+  .avatar {
+    font-size: 1.2rem;
+    flex-shrink: 0; 
+  }
+}
+
+.operator-details {
+  display: flex;
+  align-items: center; 
+  flex-wrap: wrap;     
+  gap: 6px;            
+  font-size: 0.9rem;
+
+  .work-label {
+    color: #9ca3af;    
+  }
+
+  .operator-name {
+    color: #ffffff;
+    white-space: nowrap; 
+  }
+}
+
+
+.role-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 1.4;
+
+  &.admin {
+    background-color: rgba(255, 77, 77, 0.15); 
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 77, 77, 0.4);
+  }
+
+  &.operator {
+    background-color: rgba(77, 163, 255, 0.15);
+    color: #4da3ff;
+    border: 1px solid rgba(77, 163, 255, 0.4);
+  }
+}

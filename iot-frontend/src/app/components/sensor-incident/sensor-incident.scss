@@ -1,0 +1,61 @@
+.incidents-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+
+  .chart-box {
+    background: rgba(255, 255, 255, 0.02);
+    height: 180px;
+    margin-bottom: 20px;
+  }
+}
+
+.incident-row {
+  display: flex;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: transform 0.2s;
+
+  &:hover { background: #242f3f;}
+
+  .status-indicator { width: 6px; }
+
+  // Boje na osnovu severity-ja
+  &.critical { .status-indicator { background: #f44336; } .sev-badge { color: #f44336; } }
+  &.high { .status-indicator { background: #ff9800; } .sev-badge { color: #ff9800; } }
+  &.medium { .status-indicator { background: #ffeb3b; } .sev-badge { color: #fbc02d; } }
+  &.low { .status-indicator { background: #4caf50; } .sev-badge { color: #4caf50; } }
+
+  .incident-body {
+    padding: 12px;
+    flex: 1;
+
+    .inc-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      .sev-badge { font-weight: bold; font-size: 11px; }
+      .time { color: #9ca3af; font-size: 11px; }
+    }
+
+    .message { margin: 4px 0; font-size: 13px; color: #ffffff; }
+
+    .inc-status-line {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 11px;
+      .status-tag { font-weight: 600; color: #3b82f6;}
+      .operator { display: flex; align-items: center; gap: 4px; color: #9ca3af; mat-icon { font-size: 14px; width: 14px; height: 14px; } }
+    }
+  }
+}
+
+.scroll-area {
+  max-height: 400px;
+  overflow-y: auto;
+}

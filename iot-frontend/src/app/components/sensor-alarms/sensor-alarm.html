@@ -1,0 +1,57 @@
+<mat-card class="alarms-card glass-card" *ngIf="alarms && alarms.length > 0">
+  <mat-card-header>
+    <mat-card-title>Aktivna Pravila / Alarmi</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngFor="let rule of alarms" class="rule-item">
+      
+      <mat-icon [class.active-warn]="rule.severity === 'HIGH' || rule.severity === 'CRITICAL'">
+        {{ rule.severity === 'LOW' ? 'info' : rule.severity === 'MEDIUM' ? 'notifications' : 'warning' }}
+      </mat-icon>
+
+      <div class="rule-info">
+        <span class="desc">Alarm pravilo</span>
+
+        <ng-container *ngIf="editId === rule.id && authService.isAdmin(); else readMode">
+          <div class="edit-inputs">
+            <input type="number" [(ngModel)]="tempLow" class="small-input">
+            <span> – </span>
+            <input type="number" [(ngModel)]="tempHigh" class="small-input">
+            <span class="unit-label">{{ unit }}</span>
+          </div>
+        </ng-container>
+
+        <ng-template #readMode>
+          <span class="threshold">
+            {{ rule.lowThreshold }} – {{ rule.highThreshold }} {{ unit }}
+          </span>
+          <span class="severity" [class]="rule.severity.toLowerCase()">
+            {{ rule.severity }}
+          </span>
+        </ng-template>
+      </div>
+
+      <div class="actions" *ngIf="authService.isAdmin()">
+        <ng-container *ngIf="editId !== rule.id; else saveActions">
+          <button mat-icon-button (click)="startEdit(rule)" class="edit-btn">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteAlarm(rule.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-container>
+
+        <ng-template #saveActions>
+          <button mat-icon-button color="primary" (click)="saveEdit(rule)">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button mat-icon-button (click)="cancelEdit()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </ng-template>
+      </div>
+
+    </div>
+  </mat-card-content>
+</mat-card>

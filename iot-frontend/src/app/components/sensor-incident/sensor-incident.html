@@ -1,0 +1,37 @@
+<mat-card class="incidents-card glass-card">
+  <mat-card-header>
+    <mat-card-title>Statistika i Istorija</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="chart-box">
+      <canvas baseChart
+        [data]="doughnutChartData"
+        [options]="doughnutChartOptions"
+        [type]="doughnutChartType">
+      </canvas>
+    </div>
+
+    <div class="incident-list-container">
+      <div *ngIf="incidents && incidents.length > 0; else noIncidents">
+        <div *ngFor="let inc of incidents" class="incident-row" [class]="inc.severity.toLowerCase()">
+          <div class="status-indicator"></div>
+          <div class="incident-body">
+            <div class="inc-meta">
+              <span class="sev-badge">{{ inc.severity }}</span>
+              <span class="time">{{ inc.createdAt | date:'dd.MM. HH:mm' }}</span>
+            </div>
+            <p class="message">{{ inc.description }}</p>
+            <div class="inc-status-line">
+              <span class="status-tag">{{ inc.status }}</span>
+              <span class="operator" *ngIf="inc.assignedTo">{{ inc.assignedTo.username }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noIncidents>
+        <p class="empty-msg">Nema zabeleženih incidenata.</p>
+      </ng-template>
+    </div>
+  </mat-card-content>
+</mat-card>

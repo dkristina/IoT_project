@@ -1,0 +1,120 @@
+/* Kontejner cele stranice */
+.page-container {
+  padding: 2rem;
+  background-color: #0b111e;
+  min-height: 100vh;
+  color: white;
+}
+
+/* Header sekcija */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #1f2937;
+  margin-bottom: 2rem;
+}
+
+.header-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff; /* Svetlo plava za akcenat */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+
+.controls-bar {
+  display: flex;
+  gap: 16px;
+  background: #161f2e;
+  padding: 1.2rem;
+  border-radius: 15px;
+  border: 1px solid #1f2937;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  margin-bottom: 2rem;
+
+  ::v-deep .mat-form-field-outline {
+    color: #3b82f6 !important;
+  }
+  ::v-deep input {
+    color: white !important;
+  }
+  
+}
+
+.search-field {
+  flex: 1; 
+}
+
+/* Redizajn tabele */
+.table-wrapper {
+  background: #161f2e;
+  border-radius: 15px;
+  border: 1px solid #1f2937;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+
+  table {
+    background: transparent !important;
+    
+    th { color: #9ca3af !important; font-weight: 600; }
+    td { color: #e5e7eb !important; border-bottom: 1px solid rgba(31, 41, 55, 0.5); }
+    
+    .mat-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+}
+table {
+  width: 100%;
+}
+
+
+.mat-column-id {
+  font-family: 'Courier New', Courier, monospace;
+  color: #9ca3af !important;
+  font-weight: bold;
+  width: 60px;
+}
+
+.mat-column-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+
+.unit-badge {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #3b82f6;
+}
+
+
+@media (max-width: 768px) {
+  .controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

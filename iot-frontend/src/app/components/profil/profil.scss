@@ -1,0 +1,246 @@
+.profile-container {
+  display: flex;
+  gap: 30px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+ 
+  min-height: 100vh;      
+  height: auto;           
+  overflow-y: visible;    
+  padding-bottom: 150px;  
+
+.user-sidebar {
+  flex: 0 0 300px;
+
+  .info-card {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+
+    .avatar-circle {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .role-badge {
+      background: #3f51b5;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .email-text {
+      margin-top: 15px;
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      margin-top: 30px;
+      width: 100%;
+    }
+  }
+}
+
+.incidents-content {
+  flex: 1;
+  height: auto;
+  min-height: min-content;
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    color: #e0e0e0;
+  }
+}
+
+.incident-section {
+  margin-bottom: 40px;
+}
+
+.incident-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  margin-bottom: 15px;
+  border-left: 5px solid #607d8b;
+  transition: transform 0.2s;
+
+  &:hover { transform: translateX(5px); }
+
+  // Boje po severity-ju
+  &.critical { border-left-color: #f44336; }
+  &.high { border-left-color: #ff9800; }
+  &.resolved-grey { 
+    border-left-color: #4caf50; 
+    opacity: 0.8;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    
+    .status-tag {
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    
+    .resolved-tag {
+      color: #4caf50;
+      font-weight: bold;
+      font-size: 0.7rem;
+    }
+  }
+
+  .desc {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+}
+
+.empty-msg {
+  padding: 20px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  border: 1px dashed rgba(255,255,255,0.1);
+  text-align: center;
+  color: #888;
+}
+
+
+
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+
+  .avatar-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #3f51b5;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .avatar-circle {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .change-photo-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+
+    &:hover { transform: scale(1.1); background: #1976d2; }
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  }
+}
+
+.email-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #b0b0b0;
+  margin-top: 10px;
+  font-size: 0.95rem;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+
+
+.info-card {
+  position: relative; 
+}
+
+.edit-toggle-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  z-index: 10;
+  &:hover { color: white; transform: scale(1.1); }
+}
+
+.edit-input {
+  width: 100%;
+  margin-top: 10px;
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-flex {
+    padding-top: 4px !important;
+  }
+}
+
+.save-btn {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #4caf50 !important; 
+}
+
+.full-name-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 10px 0;
+  color: #ddd;
+}
+
+.user-sidebar {
+  flex: 0 0 300px;
+  position: sticky; 
+  top: 20px;       
+} 
+}

@@ -1,0 +1,81 @@
+<div class="container animate-fade-in">
+  
+  <div *ngIf="(loading$ | async) && !(sensor$ | async)" class="center-spinner">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Učitavanje podataka...</p>
+  </div>
+
+  <div *ngIf="sensor$ | async as sensor; else noSensor">
+    
+    <mat-card class="top-info-bar glass-card">
+      <div class="bar-content">
+        <div class="main-title">
+          <button mat-icon-button routerLink="/sensors" matTooltip="Nazad">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="title-text">
+            <h1>{{ sensor.name }}</h1>
+            <span class="status-badge" [class.active]="sensor.measurements?.length > 0">
+              {{ sensor.measurements?.length > 0 ? 'Aktivan' : 'Nema očitavanja' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="quick-info">
+          <div class="info-item">
+            <mat-icon>place</mat-icon>
+            <div class="text-group">
+              <label>Lokacija</label>
+              <p>{{ sensor.location }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>straighten</mat-icon>
+            <div class="text-group">
+              <label>Jedinica</label>
+              <p>{{ sensor.unit }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>fingerprint</mat-icon>
+            <div class="text-group">
+              <label>Sistem ID</label>
+              <p>#{{ sensor.id }}</p>
+            </div>
+          </div>
+        </div>
+
+        <button mat-flat-button color="warn" (click)="reportManualIncident()" class="report-btn">
+          <mat-icon>report_problem</mat-icon>
+          PRIJAVI INCIDENT
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="dashboard-three-columns">
+      
+      <div class="col">
+        <app-sensor-alarms [alarms]="sensor.alarms" [unit]="sensor.unit"></app-sensor-alarms>
+      </div>
+
+      <div class="col">
+        <app-sensor-incident [incidents]="incidents$ | async"></app-sensor-incident>
+      </div>
+
+      <div class="col">
+        <app-sensor-history [measurements]="sensor.measurements" [unit]="sensor.unit"></app-sensor-history>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #noSensor>
+  <div *ngIf="!(loading$ | async)" class="center-spinner">
+    <mat-icon color="warn" style="font-size: 48px; width: 48px; height: 48px;">error_outline</mat-icon>
+    <p>Podaci o senzoru nisu dostupni.</p>
+    <button mat-stroked-button routerLink="/sensors">Nazad na listu</button>
+  </div>
+</ng-template>

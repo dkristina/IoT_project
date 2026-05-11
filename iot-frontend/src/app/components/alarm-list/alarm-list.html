@@ -1,0 +1,38 @@
+<div class="alarms-container">
+  <header>
+    <h2>Sistem za praćenje alarma</h2>
+  </header>
+
+  <app-alarm-filter 
+    labela="Pretraga po ID senzora:" 
+    placeholderText="Unesite ID senzora..."
+    (filterChanged)="onFilterApply($event)">
+  </app-alarm-filter>
+
+  <div class="alarms-grid">
+    <div *ngFor="let alarm of (filteredAlarms$ | async)" 
+         class="alarm-card" 
+         [class]="'severity-' + alarm.severity.toLowerCase()">
+      
+      <div class="card-header">
+        <span>Senzor: {{ alarm.sensor?.id || 'N/A' }}</span>
+        <div class="status-badge">{{ alarm.severity }}</div>
+      </div>
+
+      <div class="card-body">
+        <p>Pragovi: <strong>{{ alarm.lowThreshold }} - {{ alarm.highThreshold }}</strong></p>
+      </div>
+
+      <button 
+        *ngIf="authService.isAdmin()" 
+        class="btn-delete" 
+        (click)="deleteAlarm(alarm.id)">
+        Obriši pravilo
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="(filteredAlarms$ | async)?.length === 0" class="no-data">
+    <p>Nema pronađenih alarmnih pravila.</p>
+  </div>
+</div>

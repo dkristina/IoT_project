@@ -1,0 +1,59 @@
+<div class="dashboard-container">
+  <header>
+    <h1><i class="alert-icon"></i> Operativni Centar - Incidenti</h1>
+  </header>
+
+  <div class="grid-scroll-container">
+    <div class="incident-grid">
+      @for (incident of incidents$ | async; track incident.id) {
+        <div class="incident-card" 
+             [class]="'status-' + incident.status.toLowerCase()"
+             [class.critical]="incident.severity === 'CRITICAL'">
+          
+          <div class="card-header">
+            <span class="severity-badge">{{ incident.severity }}</span>
+            <span class="time">{{ incident.createdAt | date:'HH:mm:ss' }}</span>
+          </div>
+
+          <div class="card-body">
+            <h3>Senzor #{{ incident.sensor?.id }}</h3>
+            <p>{{ incident.description }}</p>
+          </div>
+
+         <div class="assignment-box">
+            @if (incident.assignedTo) {
+              <div class="operator-tag">
+                <span class="avatar">👤</span>
+                <div class="operator-details">
+                  <span class="work-label">Radi na ovome:</span>
+                  <strong class="operator-name">{{ incident.assignedTo.username }}</strong>
+                  <span class="role-badge" [ngClass]="incident.assignedTo.role.toLowerCase()">
+                    {{ incident.assignedTo.role }}
+                  </span>
+                </div>
+              </div>
+            } @else if (incident.status !== 'RESOLVED') {
+              <button class="btn-claim" (click)="claimIncident(incident.id)">
+                Preuzmi zadatak
+              </button>
+            }
+          </div>
+
+          <div class="card-footer">
+            <div class="status-row">
+              <span class="status-text">Status: {{ incident.status }}</span>
+              
+              @if (incident.status === 'RESOLVED') {
+                <span class="resolved-check">✔ Rešeno </span>
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>Trenutno nema aktivnih incidenata.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

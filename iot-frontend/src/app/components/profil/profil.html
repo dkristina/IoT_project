@@ -1,0 +1,91 @@
+<div class="profile-container" *ngIf="user$ | async as user">
+  <aside class="user-sidebar">
+    <mat-card class="glass-card info-card">
+      <button class="edit-toggle-btn" (click)="toggleEdit()">
+        <mat-icon>{{ isEditing ? 'close' : 'edit' }}</mat-icon>
+      </button>
+
+      <div class="avatar-wrapper">
+        <img *ngIf="selectedAvatar || user.avatarUrl" [src]="selectedAvatar || user.avatarUrl" class="avatar-img" />
+        <div *ngIf="!selectedAvatar && !user.avatarUrl" class="avatar-circle">
+          {{ user.username[0].toUpperCase() }}
+        </div>
+        <button class="change-photo-btn" (click)="fileInput.click()">
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+        <input #fileInput type="file" (change)="onFileSelected($event)" hidden accept="image/*">
+      </div>
+
+      <div class="user-details-text">
+        <h2 *ngIf="!isEditing">{{ user.username }}</h2>
+        <mat-form-field *ngIf="isEditing" appearance="outline" class="edit-input">
+          <mat-label>Korisničko ime</mat-label>
+          <input matInput #usernameInput [value]="user.username">
+        </mat-form-field>
+
+        <span class="role-badge">{{ user.role }}</span>
+
+        <p class="full-name-text" *ngIf="!isEditing">{{ user.fullName || 'Nema imena' }}</p>
+        <mat-form-field *ngIf="isEditing" appearance="outline" class="edit-input">
+          <mat-label>Puno ime i prezime</mat-label>
+          <input matInput #fullNameInput [value]="user.fullName || ''">
+        </mat-form-field>
+
+        <p class="email-text" *ngIf="!isEditing">
+          <mat-icon>email</mat-icon> {{ user.email }}
+        </p>
+        <mat-form-field *ngIf="isEditing" appearance="outline" class="edit-input">
+          <mat-label>Email</mat-label>
+          <input matInput #emailInput [value]="user.email">
+        </mat-form-field>
+      </div>
+      
+      <button *ngIf="isEditing || selectedAvatar" mat-flat-button color="primary" class="save-btn" 
+              (click)="onUpdateProfile()">
+        <mat-icon>save</mat-icon> SAČUVAJ IZMENE
+      </button>
+
+      <button mat-flat-button color="warn" class="logout-btn" (click)="onLogout()" *ngIf="!isEditing">
+        <mat-icon>logout</mat-icon> ODJAVI SE
+      </button>
+    </mat-card>
+  </aside>
+
+  <main class="incidents-content">
+    <section class="incident-section">
+      <h3><mat-icon>pending_actions</mat-icon> Incidenti na kojima radim</h3>
+      <div class="incident-grid" *ngIf="activeTasks$ | async as active">
+        <mat-card *ngFor="let inc of active" class="incident-card active-border" [class]="inc.severity.toLowerCase()">
+          <mat-card-content>
+            <div class="card-header">
+              <strong>Senzor #{{ inc.sensor?.id }}</strong>
+              <span class="status-tag">U TOKU</span>
+            </div>
+            <p class="desc">{{ inc.description }}</p>
+            
+            <button mat-flat-button color="accent" class="resolve-btn" (click)="resolve(inc.id)">
+              <mat-icon>check_circle</mat-icon> ZATVORI INCIDENT
+            </button>
+          </mat-card-content>
+        </mat-card>
+        <div *ngIf="active.length === 0" class="empty-msg">Nema aktivnih zadataka.</div>
+      </div>
+    </section>
+
+    <section class="incident-section">
+      <h3><mat-icon>task_alt</mat-icon> Rešeni incidenti</h3>
+      <div class="incident-grid" *ngIf="resolvedTasks$ | async as resolved">
+        <mat-card *ngFor="let inc of resolved" class="incident-card resolved-grey">
+          <mat-card-content>
+            <div class="card-header">
+              <strong>Senzor #{{ inc.sensor?.id || inc.id }}</strong>
+              <span class="resolved-tag">REŠENO</span>
+            </div>
+            <p class="desc">{{ inc.description }}</p>
+          </mat-card-content>
+        </mat-card>
+        <div *ngIf="resolved.length === 0" class="empty-msg">Nema istorije rešenih incidenata.</div>
+      </div>
+    </section>
+  </main>
+</div>

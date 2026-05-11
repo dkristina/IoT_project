@@ -1,0 +1,87 @@
+<div class="users-page">
+  <div class="header-section">
+    <div class="title-group">
+      <h1>Korisnici sistema</h1>
+      <p class="subtitle">
+        {{ isAdmin ? 'Potpuna kontrola i upravljanje operaterima' : 'Pregled aktivnih operatera sistema' }}
+      </p>
+    </div>
+
+    <div class="top-actions">
+      <button *ngIf="isAdmin" class="btn-add-user" (click)="isModalOpen = true">
+        <span class="icon">+</span> Novi korisnik
+      </button>
+      
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearch()" 
+          placeholder="Pretraži po imenu...">
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading$ | async" class="loading-bar">
+    <div class="progress"></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>IME I PREZIME</th>
+            <th>KORISNIČKO IME</th>
+            <th>EMAIL ADRESA</th>
+            <th>ULOGA</th>
+            <th *ngIf="isAdmin" class="actions-head">AKCIJE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users$ | async">
+            <td>
+              <div class="user-cell">
+                <div class="avatar-circle">
+                  {{ user.fullName?.charAt(0) || '?' }}
+                </div>
+                <div class="user-meta">
+                  <span class="full-name">{{ user.fullName }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="username-tag">@{{ user.username }}</span></td>
+            <td class="email-text">{{ user.email }}</td>
+            <td>
+              <span class="role-badge" [ngClass]="user.role.toLowerCase()">
+                {{ user.role }}
+              </span>
+            </td>
+            <td *ngIf="isAdmin">
+              <div class="action-buttons">
+                <button (click)="handleUpdatePassword(user)" class="btn-action btn-key" title="Promeni lozinku">
+                  🔑
+                </button>
+                <button (click)="handleDelete(user.id)" class="btn-action btn-trash" title="Obriši korisnika">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="(users$ | async)?.length === 0 && !(loading$ | async)" class="empty-state">
+      <div class="empty-icon">👥</div>
+      <p>Nema pronađenih korisnika koji odgovaraju pretrazi.</p>
+    </div>
+  </div>
+
+  <app-user-modal 
+    [isOpen]="isModalOpen" 
+    (close)="isModalOpen = false" 
+    (save)="onUserSave($event)">
+  </app-user-modal>
+</div>

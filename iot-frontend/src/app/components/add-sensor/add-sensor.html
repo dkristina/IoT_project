@@ -1,0 +1,35 @@
+<div class="modal-overlay" *ngIf="authService.isAdmin()" (click)="closeModal.emit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-circle">➕</div>
+      <h3>Novi Senzor</h3>
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Naziv</label>
+        <input type="text" [(ngModel)]="sensorData.name" name="name" required placeholder="Unesite naziv...">
+      </div>
+
+      <div class="form-group">
+        <label>Lokacija</label>
+        <input type="text" [(ngModel)]="sensorData.location" name="location" required placeholder="Unesite lokaciju...">
+      </div>
+
+      <div class="form-group">
+        <label>Merna jedinica</label>
+        <select [(ngModel)]="sensorData.unit" name="unit" required>
+          <option value="" disabled selected>Izaberite jedinicu</option>
+          <option value="°C">Temperatura (°C)</option>
+          <option value="%">Vlažnost (%)</option>
+          <option value="bar">Pritisak (bar)</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onCancel()">Otkaži</button>
+        <button type="submit" class="btn-save">Sačuvaj senzor</button>
+      </div>
+    </form>
+  </div>
+</div>
