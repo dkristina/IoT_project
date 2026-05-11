@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-#BAZA PODATAKA
+  # BAZA PODATAKA
   db:
     image: timescale/timescaledb:latest-pg14
     container_name: iot_db
@@ -13,6 +13,39 @@ services:
       - "5432:5432"
     volumes:
       - timescale-data:/var/lib/postgresql/data
+    restart: always
+
+  # BACKEND
+  backend:
+    build:
+      context: ./iot-backend
+      dockerfile: Dockerfile
+    container_name: iot_backend
+    ports:
+      - "3000:3000"
+    
+    volumes:
+      - ./iot-backend:/app          
+      - /app/node_modules          
+    depends_on:
+      - db
+    restart: always                 # Restartuje se dok se baza ne podigne skroz
+    command: npm run start:dev
+
+  # FRONTEND
+  frontend:
+    build:
+      context: ./iot-frontend
+      dockerfile: Dockerfile
+    container_name: iot_frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./iot-frontend:/app         
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npx ng serve --host 0.0.0.0 --poll 2000
 
 volumes:
   timescale-data:

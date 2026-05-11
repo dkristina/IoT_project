@@ -13,12 +13,13 @@ import { Alarm } from './alarms/entities/alarm.entity';
 import { Measurement } from './measurements/entities/measurement.entity';
 import { Incident } from './incidents/entities/incident.entity';
 import { AuthModule } from './auth/auth.module';
+import { SimulatorService } from './simulator.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres', 
-      host: 'localhost', 
+      host: 'db', 
       port: 5432, 
       username: 'kristina', 
       password: 'kristina96', 
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true,
 
     }),
+    TypeOrmModule.forFeature([Sensor]),
     UsersModule,
     AuthModule,
     AlarmsModule,
