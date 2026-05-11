@@ -8,6 +8,7 @@ import { IncidentsModule } from 'src/incidents/incidents.module';
 import { IotGateway } from 'src/gateways/iot.gateway';
 import { GatewaysModule } from 'src/gateways/gateways.module';
 import { SensorsModule } from 'src/sensors/sensors.module';
+import { SimulatorService } from 'src/simulator.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SensorsModule } from 'src/sensors/sensors.module';
     GatewaysModule,
   ],
   controllers: [MeasurementsController],
-  providers: [MeasurementsService],
+  providers: [MeasurementsService /*, SimulatorService*/],
+  exports: [MeasurementsService],
 })
 export class MeasurementsModule {}

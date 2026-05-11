@@ -22,6 +22,12 @@ export class IncidentsController {
     return this.incidentsService.findAll();
   }
 
+  @Get('sensor/:sensorId')
+  @Roles(UserRole.ADMIN, UserRole.OPERATOR)
+  async findBySensor(@Param('sensorId', ParseIntPipe) sensorId: number) {
+    return this.incidentsService.findBySensor(sensorId);
+  }
+
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.OPERATOR)
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -39,4 +45,5 @@ export class IncidentsController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.incidentsService.remove(id);
   }
+
 }

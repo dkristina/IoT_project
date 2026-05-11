@@ -25,7 +25,7 @@ export class SensorsService {
   }
 
   async findOne(id: number): Promise<Sensor> {
-    const sensor = await this.sensorsRepository.findOne({ where: { id }, relations: ['measurements'] });
+    const sensor = await this.sensorsRepository.findOne({ where: { id }, relations: ['measurements', 'alarms'] });
     if (!sensor) throw new NotFoundException(`Sensor with ID ${id} not found.`);
     return sensor;
   }

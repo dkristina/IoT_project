@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateIncidentDto } from './dto/create-incident.dto';
 import { UpdateIncidentDto } from './dto/update-incident.dto';
 import { Not, Repository } from 'typeorm';
 import { Incident, IncidentStatus } from './entities/incident.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IotGateway } from 'src/gateways/iot.gateway';
+
 
 @Injectable()
 export class IncidentsService {
@@ -44,25 +45,32 @@ export class IncidentsService {
   }
 
   async update(id: number, updateIncidentDto: UpdateIncidentDto): Promise<Incident> {
-    const incident = await this.findOne(id);
+  // 1. Nađi incident
+  const incident = await this.findOne(id);
 
-    //ako se status menja u RESOLVED, automatski postavljamp i vreme resavanja
-    if(updateIncidentDto.status === IncidentStatus.RESOLVED && !incident.resolvedAt) {
-      incident.resolvedAt = new Date(); 
+  // 2. Ručno proveri status iz DTO-a
+  if (updateIncidentDto.status === IncidentStatus.RESOLVED) {
+    incident.status = IncidentStatus.RESOLVED;
+    // Ako već nema upisano vreme, upiši ga SADA
+    if (!incident.resolvedAt) {
+      incident.resolvedAt = new Date();
     }
-
-    if(updateIncidentDto.assignedToId){
-      incident.assignedTo = {id: updateIncidentDto.assignedToId} as any;
-    }
-
-    Object.assign(incident, updateIncidentDto); 
-    const updated = await this.incidentsRepository.save(incident); 
-
-    this.iotGateway.sendIncidentAlert(updated);
-    
-    return updated; 
+  } else if (updateIncidentDto.status) {
+    incident.status = updateIncidentDto.status;
   }
 
+  // 3. Ostala polja iz DTO-a (ako ih ima)
+  if (updateIncidentDto.description) incident.description = updateIncidentDto.description;
+  if (updateIncidentDto.assignedToId) {
+    incident.assignedTo = { id: updateIncidentDto.assignedToId } as any;
+  }
+
+  // 4. SAVE - TypeORM će sada sigurno videti da se resolvedAt promenio
+  const updated = await this.incidentsRepository.save(incident); 
+  
+  this.iotGateway.sendIncidentAlert(updated);
+  return updated; 
+}
   async remove(id: number): Promise<{ message: string }> {
     const incident = await this.findOne(id);
     await this.incidentsRepository.remove(incident);
@@ -82,13 +90,23 @@ export class IncidentsService {
   }
 
   async findActiveBySensor(sensorId: number): Promise<Incident | null> {
-  return await this.incidentsRepository.findOne({
-    where: {
-      sensor: { id: sensorId },
-      status: Not(IncidentStatus.RESOLVED) //sve sto nije "reseno" se smatra aktivnim
-    },
-    relations: ['sensor'],
-    order: { id: 'DESC' }
-  });
-}
+    return await this.incidentsRepository.findOne({
+      where: {
+        sensor: { id: sensorId },
+        status: Not(IncidentStatus.RESOLVED) //sve sto nije "reseno" se smatra aktivnim
+      },
+      relations: ['sensor'],
+      order: { id: 'DESC' }
+    });
+  }
+
+  async findBySensor(sensorId: number): Promise<Incident[]> {
+    return await this.incidentsRepository.find({
+      where: { sensor: { id: sensorId } },
+      relations: ['assignedTo', 'sensor'], 
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+
 }
