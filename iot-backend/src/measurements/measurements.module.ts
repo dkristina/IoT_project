@@ -19,7 +19,7 @@ import { SimulatorService } from 'src/simulator.service';
     GatewaysModule,
   ],
   controllers: [MeasurementsController],
-  providers: [MeasurementsService /*, SimulatorService*/],
+  providers: [MeasurementsService, SimulatorService],
   exports: [MeasurementsService],
 })
 export class MeasurementsModule {}

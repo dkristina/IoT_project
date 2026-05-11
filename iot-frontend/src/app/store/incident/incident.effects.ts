@@ -1,16 +1,23 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 
 import { IncidentActions } from './incident.actions';
 import { catchError, map, mergeMap, of, switchMap, tap, zip } from 'rxjs';
 import { IncidentService } from '../../core/services/incident.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { WebsocketService } from '../../core/services/websocket.service';
+import { Action } from '@ngrx/store';
 
 @Injectable()
-export class IncidentEffects {
+export class IncidentEffects implements OnInitEffects{
   private actions$ = inject(Actions);
   private incidentService = inject(IncidentService);
   private snackBar = inject(MatSnackBar);
+  private webSocketService = inject(WebsocketService);
+
+  ngrxOnInitEffects(): Action {
+    return { type: '[Incident] Initialize WebSockets' };
+  }
 
   loadIncidents$ = createEffect(() => this.actions$.pipe(
     ofType(IncidentActions.loadIncidents),
@@ -39,6 +46,10 @@ export class IncidentEffects {
   showNotification$ = createEffect(() => this.actions$.pipe(
     ofType(IncidentActions.createIncidentSuccess, IncidentActions.socketIncidentReceived),
     tap(({ incident }) => {
+
+      if (incident.status !== 'NEW') {
+        return; 
+      }
       // Određujemo klasu na osnovu stvarnog severity-ja incidenta
       let snackClass = 'info-snackbar'; // default
       
@@ -59,31 +70,26 @@ export class IncidentEffects {
   ), { dispatch: false });
 
   takeIncident$ = createEffect(() => this.actions$.pipe(
-  ofType(IncidentActions.takeIncident),
-  // switchMap je obavezan za asinhroni poziv
-  switchMap(({ id, userId }) => {
-    
-    // zip operator kombinuje dva stream-a
-    return zip(
-      this.incidentService.takeIncident(id, userId), // Prvi stream: backend
-      of(JSON.parse(localStorage.getItem('user_data') || '{}')) // Drugi stream: lokalni user
-    ).pipe(
-      map(([incident, currentUser]) => {
-        // [incident, currentUser] su rezultati zip-ovanja
-        const enrichedIncident = {
-          ...incident,
-          assignedTo: currentUser // Ovde popunjavamo ono što je bilo prazno
-        };
+    ofType(IncidentActions.takeIncident),
+    switchMap(({ id, userId }) => {
+      return zip(
+        this.incidentService.takeIncident(id, userId), 
+        of(JSON.parse(localStorage.getItem('user_data') || '{}'))
+      ).pipe(
+        map(([incident, currentUser]) => {
+         
+          const enrichedIncident = {
+            ...incident,
+            assignedTo: currentUser 
+          };
+          return IncidentActions.updateIncidentSuccess({ incident: enrichedIncident });
+        }),
+        catchError(error => of(IncidentActions.updateIncidentFailure({ error })))
+      );
+    })
+  ));
 
-        console.log('✅ Spojeno pomoću operatora ZIP:', enrichedIncident);
-        return IncidentActions.updateIncidentSuccess({ incident: enrichedIncident });
-      }),
-      catchError(error => of(IncidentActions.updateIncidentFailure({ error })))
-    );
-  })
-));
 
-// incident.effects.ts
 loadIncidentsBySensor$ = createEffect(() => this.actions$.pipe(
   ofType(IncidentActions.loadIncidentsBySensor),
   mergeMap(({ sensorId }) => 
@@ -93,4 +99,20 @@ loadIncidentsBySensor$ = createEffect(() => this.actions$.pipe(
     )
   )
 ));
+
+initWebsocketStreams$ = createEffect(() => {
+    return this.webSocketService.listenToIncidents().pipe(
+      tap(data => console.log('STIGAO NOVI INCIDENT PREKO SOKETA:', data)),
+      map(incident => IncidentActions.socketIncidentReceived({ incident }))
+    );
+  });
+
+  // ISPRAVLJENO: Koristi se this.webSocketService
+  initWebsocketUpdates$ = createEffect(() => {
+    return this.webSocketService.listenToIncidentUpdates().pipe(
+      tap(data => console.log('STIGAO UPDATE PREKO SOKETA:', data)),
+      map(incident => IncidentActions.socketIncidentReceived({ incident }))
+    );
+  });
 }
+

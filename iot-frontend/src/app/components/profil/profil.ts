@@ -45,7 +45,10 @@ export class ProfileComponent {
   isEditing = false;
   selectedAvatar: string | null = null;
 
-
+  ngOnInit() {
+    this.store.dispatch(IncidentActions.loadIncidents());
+  }
+  
   // 1. Uhvati sve incidente (provera po imenu u opisu i dodeljenom korisniku)
   myIncidents$ = this.user$.pipe(
   filter(user => !!user),
@@ -94,7 +97,7 @@ export class ProfileComponent {
     }
   }
 
-  // Funkcija sada sama uzima vrednosti iz inputa
+  // Funkcija sama uzima vrednosti iz inputa
   onUpdateProfile() {
   const currentUser = this.authService.getCurrentUserValue();
   if (!currentUser) return;

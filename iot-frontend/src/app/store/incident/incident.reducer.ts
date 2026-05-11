@@ -24,15 +24,15 @@ export const incidentReducer = createReducer(
     adapter.setAll(incidents, { ...state, loading: false })),
 
   on(IncidentActions.updateIncidentSuccess, (state, { incident }) => 
-    adapter.updateOne({ id: incident.id, changes: incident }, state)),
+    adapter.upsertOne(incident, { ...state, loading: false })),
 
   on(IncidentActions.socketIncidentReceived, (state, { incident }) => 
-    adapter.upsertOne(incident, { ...state, loading: false })), // Dodaje novi ili ažurira postojeći
+    adapter.upsertOne(incident, { ...state, loading: false })),
 
   on(IncidentActions.loadIncidentsFailure, (state, { error }) => ({ ...state, error, loading: false })),
-  // Dodaj ovo unutar createReducer-a
+
   on(IncidentActions.createIncidentSuccess, (state, { incident }) => 
-    adapter.addOne(incident, state)),
+    adapter.upsertOne(incident, { ...state, loading: false }))
 
   
 );

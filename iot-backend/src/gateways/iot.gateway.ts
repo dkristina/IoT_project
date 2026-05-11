@@ -29,6 +29,9 @@ export class IotGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('newIncident', incident);
   }
 
+  sendIncidentUpdate(incident: any) {
+    this.server.emit('incidentUpdated', incident);
+  }
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected to WebSocket: ${client.id}`);

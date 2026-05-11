@@ -22,7 +22,12 @@ export class IncidentsService {
       assignedTo: createIncidentDto.assignedToId ? { id: createIncidentDto.assignedToId } as any : null,
     }); 
 
-    return await this.incidentsRepository.save(incident); 
+    const saved = await this.incidentsRepository.save(incident);
+    
+    const fullIncident = await this.findOne(saved.id);
+    this.iotGateway.sendIncidentAlert(fullIncident); 
+    
+    return fullIncident;
   }
 
   async findAll(): Promise<Incident[]> {
@@ -46,31 +51,35 @@ export class IncidentsService {
 
   async update(id: number, updateIncidentDto: UpdateIncidentDto): Promise<Incident> {
   // 1. Nađi incident
-  const incident = await this.findOne(id);
+    const incident = await this.findOne(id);
 
-  // 2. Ručno proveri status iz DTO-a
-  if (updateIncidentDto.status === IncidentStatus.RESOLVED) {
-    incident.status = IncidentStatus.RESOLVED;
-    // Ako već nema upisano vreme, upiši ga SADA
-    if (!incident.resolvedAt) {
-      incident.resolvedAt = new Date();
+    // 2. Ručno proveri status iz DTO-a
+    if (updateIncidentDto.status === IncidentStatus.RESOLVED) {
+      incident.status = IncidentStatus.RESOLVED;
+      // Ako već nema upisano vreme, upiši ga SADA
+      if (!incident.resolvedAt) {
+        incident.resolvedAt = new Date();
+      }
+    } else if (updateIncidentDto.status) {
+      incident.status = updateIncidentDto.status;
     }
-  } else if (updateIncidentDto.status) {
-    incident.status = updateIncidentDto.status;
+
+    // 3. Ostala polja iz DTO-a (ako ih ima)
+    if (updateIncidentDto.description) incident.description = updateIncidentDto.description;
+    if (updateIncidentDto.assignedToId) {
+      incident.assignedTo = { id: updateIncidentDto.assignedToId } as any;
+    }
+
+    
+    const saved = await this.incidentsRepository.save(incident); 
+    
+    
+    const fullUpdated = await this.findOne(saved.id);
+    this.iotGateway.sendIncidentUpdate(fullUpdated);
+    
+    return fullUpdated;
   }
 
-  // 3. Ostala polja iz DTO-a (ako ih ima)
-  if (updateIncidentDto.description) incident.description = updateIncidentDto.description;
-  if (updateIncidentDto.assignedToId) {
-    incident.assignedTo = { id: updateIncidentDto.assignedToId } as any;
-  }
-
-  // 4. SAVE - TypeORM će sada sigurno videti da se resolvedAt promenio
-  const updated = await this.incidentsRepository.save(incident); 
-  
-  this.iotGateway.sendIncidentAlert(updated);
-  return updated; 
-}
   async remove(id: number): Promise<{ message: string }> {
     const incident = await this.findOne(id);
     await this.incidentsRepository.remove(incident);
@@ -86,7 +95,13 @@ export class IncidentsService {
       sensor: {id: measurement.sensorId} as any,
     })
 
-    return await this.incidentsRepository.save(incident);
+    const saved = await this.incidentsRepository.save(incident);
+    
+    
+    const fullIncident = await this.findOne(saved.id);
+    this.iotGateway.sendIncidentAlert(fullIncident);
+
+    return fullIncident;
   }
 
   async findActiveBySensor(sensorId: number): Promise<Incident | null> {

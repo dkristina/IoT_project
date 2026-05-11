@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router'; 
 import { AuthService } from '../../core/services/auth';
+import { IncidentActions } from '../../store/incident/incident.actions';
+import { Store } from '@ngrx/store';
 
 
 @Component({
@@ -24,6 +26,7 @@ export class LoginComponent {
 
   // Injekcija zavisnosti pomocu inject() ili preko konstruktora
   private router = inject(Router);
+  private store = inject(Store);
 
   constructor(
     private authService: AuthService,
@@ -43,7 +46,7 @@ export class LoginComponent {
       next: (res: any) => { 
         this.isLoading = false; 
         console.log('Login uspešan!', res); 
-
+        this.store.dispatch(IncidentActions.loadIncidents());
         // PREBACIVANJE NA DASHBOARD
         this.router.navigate(['/dashboard']); 
       },

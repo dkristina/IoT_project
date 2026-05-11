@@ -20,16 +20,23 @@
             <p>{{ incident.description }}</p>
           </div>
 
-         <div class="assignment-box">
+          <div class="assignment-box">
             @if (incident.assignedTo) {
               <div class="operator-tag">
                 <span class="avatar">👤</span>
                 <div class="operator-details">
                   <span class="work-label">Radi na ovome:</span>
-                  <strong class="operator-name">{{ incident.assignedTo.username }}</strong>
-                  <span class="role-badge" [ngClass]="incident.assignedTo.role.toLowerCase()">
-                    {{ incident.assignedTo.role }}
-                  </span>
+                  <strong class="operator-name">
+                    {{ incident.assignedTo?.username || 'Korisnik #' + incident.assignedTo.id }}
+                  </strong>
+                  
+                  @if (incident.assignedTo && incident.assignedTo.role) {
+                    <span class="role-badge" [ngClass]="incident.assignedTo.role.toLowerCase()">
+                        {{ incident.assignedTo.role }}
+                    </span>
+                  } @else {
+                    <span class="role-badge">OPERATOR</span>
+                  }
                 </div>
               </div>
             } @else if (incident.status !== 'RESOLVED') {
