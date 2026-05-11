@@ -22,7 +22,7 @@ export class AuthService {
   // Na početku je null, a kasnije dobija podatke
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   
-  // Observable koji će komponente (npr. Navbar) "slušati"
+  // Observable koji ce komponente "slušati"
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
@@ -41,7 +41,7 @@ export class AuthService {
     }
   }
 
-  login(credentials: { username: string; pass: string }): Observable<LoginResponse> {
+  login(credentials: { username: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
       tap((res) => {
         if (res && res.access_token) {
@@ -68,9 +68,40 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  // Pomocna metoda za proveru uloge (trebace nam za sakrivanje dugmića)
+  // Pomocna metoda za proveru uloge (trebace nam za sakrivanje dugmica)
   hasRole(role: string): boolean {
     const user = this.currentUserSubject.value;
     return user ? user.role === role : false;
   }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value; 
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ADMIN'); 
+  }
+
+  isOperator(): boolean {
+    return this.hasRole('OPERATOR'); 
+  }
+
+  // 1. Pomocna metoda da lako dobijemo trenutne podatke bez "pretplate"
+getCurrentUserValue(): User | null {
+  return this.currentUserSubject.value;
+}
+
+// 2. Metoda za azuriranje profila (slika, email, itd.)
+updateProfile(userId: number, data: any): Observable<User> {
+  const usersApiUrl = `http://localhost:3000/users/${userId}`;
+  
+  
+  return this.http.patch<User>(usersApiUrl, data).pipe(
+    tap((updatedUser) => {
+      // Azuriramo lokalnu kopiju i emitujemo nove podatke (email, sliku itd.)
+      localStorage.setItem('user_data', JSON.stringify(updatedUser));
+      this.currentUserSubject.next(updatedUser);
+    })
+  );
+}
 }

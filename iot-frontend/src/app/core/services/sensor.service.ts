@@ -10,34 +10,35 @@ export class SensorsService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/sensors';
 
-  // Pomoćna metoda za kreiranje zaglavlja sa tokenom
+  /*
+  // Pomocna metoda za kreiranje zaglavlja sa tokenom
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
+  }*/
 
   // 1. Dobijanje svih senzora (GET) 
   getSensors(): Observable<Sensor[]> {
-    return this.http.get<Sensor[]>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<Sensor[]>(this.apiUrl);
   }
 
   // 2. Dobijanje jednog senzora sa merenjima (GET /sensors/:id)
   getSensorById(id: number): Observable<Sensor> {
-    return this.http.get<Sensor>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<Sensor>(`${this.apiUrl}/${id}`);
   }
 
   // 3. Kreiranje novog senzora (POST) - Samo za ADMIN-a na backendu
   createSensor(sensorData: Partial<Sensor>): Observable<Sensor> {
-    return this.http.post<Sensor>(this.apiUrl, sensorData, { headers: this.getHeaders() });
+    return this.http.post<Sensor>(this.apiUrl, sensorData);
   }
 
-  // 4. Ažuriranje senzora (PATCH /sensors/:id)
+  // 4. Azuriranje senzora (PATCH /sensors/:id)
   updateSensor(id: number, sensorData: Partial<Sensor>): Observable<Sensor> {
-    return this.http.patch<Sensor>(`${this.apiUrl}/${id}`, sensorData, { headers: this.getHeaders() });
+    return this.http.patch<Sensor>(`${this.apiUrl}/${id}`, sensorData);
   }
 
   // 5. Brisanje senzora (DELETE /sensors/:id)
   deleteSensor(id: number): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
 }

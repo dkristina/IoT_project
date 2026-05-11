@@ -12,10 +12,11 @@ export class AlarmsService {
   private apiUrl = 'http://localhost:3000/alarms';
   
 
+  /*
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
+  }*/
 
   // 1. Dobijanje svih alarma uz opcioni filter (GET /alarms?sensorId=X)
   // USLOV: Rad sa parametrima upita (Query params)
@@ -26,7 +27,7 @@ export class AlarmsService {
     }
 
     return this.http.get<Alarm[]>(this.apiUrl, { 
-      headers: this.getHeaders(), 
+      //headers: this.getHeaders(), 
       params 
     }).pipe(
       map(alarms => {
@@ -39,23 +40,22 @@ export class AlarmsService {
   // 2. Dobijanje jednog alarma (GET /alarms/:id)
   // USLOV: take(1) - uzmi podatak jednom i odmah zatvori stream (efikasnost)
   findOne(id: number): Observable<Alarm> {
-    return this.http.get<Alarm>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
-      .pipe(take(1));
+    return this.http.get<Alarm>(`${this.apiUrl}/${id}`).pipe(take(1));
   }
 
   // 3. Kreiranje alarma (POST /alarms) - Samo ADMIN
   create(alarmData: Partial<Alarm>): Observable<Alarm> {
-    return this.http.post<Alarm>(this.apiUrl, alarmData, { headers: this.getHeaders() });
+    return this.http.post<Alarm>(this.apiUrl, alarmData );
   }
 
-  // 4. Ažuriranje alarma (PATCH /alarms/:id) - Samo ADMIN
+  // 4. Azuriranje alarma (PATCH /alarms/:id) - Samo ADMIN
   update(id: number, alarmData: Partial<Alarm>): Observable<Alarm> {
-    return this.http.patch<Alarm>(`${this.apiUrl}/${id}`, alarmData, { headers: this.getHeaders() });
+    return this.http.patch<Alarm>(`${this.apiUrl}/${id}`, alarmData );
   }
 
   // 5. Brisanje alarma (DELETE /alarms/:id) - Samo ADMIN
   remove(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   
