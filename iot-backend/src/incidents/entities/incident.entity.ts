@@ -30,9 +30,15 @@ export class Incident {
     @Column({ nullable: true, type: 'timestamptz' })
     resolvedAt: Date;
 
+    @Column({ nullable: true, type: 'timestamptz' })
+    pickedUpAt: Date;
+
     @ManyToOne(() => User, (u) => u.incidents, {nullable: true})
     assignedTo: User; 
 
     @ManyToOne(() => Sensor, (s) => s.incidents)
     sensor: Sensor; 
+
+    @Column({ type: 'text', nullable: true })
+    historyLogs: string;
 }

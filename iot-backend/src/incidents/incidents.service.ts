@@ -49,31 +49,64 @@ export class IncidentsService {
     return incident;
   }
 
-  async update(id: number, updateIncidentDto: UpdateIncidentDto): Promise<Incident> {
-  // 1. Nađi incident
+ async update(id: number, updateIncidentDto: UpdateIncidentDto): Promise<Incident> {
+    // 1. Nadji incident u bazi sa trenutnim stanjem
     const incident = await this.findOne(id);
 
-    // 2. Ručno proveri status iz DTO-a
+    // 2. Rucna provera statusa i upisivanje vremenskih odrednica
     if (updateIncidentDto.status === IncidentStatus.RESOLVED) {
       incident.status = IncidentStatus.RESOLVED;
-      // Ako već nema upisano vreme, upiši ga SADA
       if (!incident.resolvedAt) {
         incident.resolvedAt = new Date();
       }
-    } else if (updateIncidentDto.status) {
+    } 
+    else if (updateIncidentDto.status === IncidentStatus.IN_PROGRESS) {
+      incident.status = IncidentStatus.IN_PROGRESS;
+      // Kada god status pređe u IN_PROGRESS (bilo prvi put ili nakon odustajanja),
+      // postavljamo novo trenutno vreme kako bi se tacno racunalo vreme novog operatera.
+      incident.pickedUpAt = new Date();
+    } 
+    else if (updateIncidentDto.status === IncidentStatus.NEW) {
+      incident.status = IncidentStatus.NEW;
+    } 
+    else if (updateIncidentDto.status) {
       incident.status = updateIncidentDto.status;
     }
 
-    // 3. Ostala polja iz DTO-a (ako ih ima)
     if (updateIncidentDto.description) incident.description = updateIncidentDto.description;
-    if (updateIncidentDto.assignedToId) {
-      incident.assignedTo = { id: updateIncidentDto.assignedToId } as any;
+
+    if (updateIncidentDto.historyLogs !== undefined && updateIncidentDto.historyLogs !== null) {
+      const stariLogIzBaze = incident.historyLogs ? incident.historyLogs.trim() : '';
+      const noviLogSaFronta = updateIncidentDto.historyLogs.trim();
+
+      if (stariLogIzBaze === '') {
+        incident.historyLogs = noviLogSaFronta;
+      } else {
+        if (!stariLogIzBaze.endsWith(noviLogSaFronta)) {
+          incident.historyLogs = `${stariLogIzBaze} | ${noviLogSaFronta}`;
+        }
+      }
     }
 
-    
+    // 3. Provera za operatora (Preuzmi / Odustani)
+    if (updateIncidentDto.hasOwnProperty('assignedToId')) {
+      if (updateIncidentDto.assignedToId === null) {
+        incident.assignedTo = null as any; 
+        incident.status = IncidentStatus.NEW;
+      } else {
+        incident.assignedTo = { id: updateIncidentDto.assignedToId } as any; 
+        
+        if (incident.status === IncidentStatus.NEW || incident.status === IncidentStatus.IN_PROGRESS) {
+          incident.status = IncidentStatus.IN_PROGRESS;
+          incident.pickedUpAt = new Date();
+        }
+      }
+    }
+
+    // 4. Sacuvaj izmene u bazi
     const saved = await this.incidentsRepository.save(incident); 
     
-    
+    // 5. Pokupi sve relacije i posalji update kroz WebSocket
     const fullUpdated = await this.findOne(saved.id);
     this.iotGateway.sendIncidentUpdate(fullUpdated);
     

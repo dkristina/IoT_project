@@ -109,7 +109,9 @@ export class UsersService {
     }
 
     Object.assign(user, updateUserDto); 
-    return await this.usersRepository.save(user); 
+    const updatedUser = await this.usersRepository.save(user);
+    const { password: _, ...result } = updatedUser;
+    return result as User;
   }
 
   //8.

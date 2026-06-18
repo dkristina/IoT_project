@@ -12,7 +12,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - timescale-data:/var/lib/postgresql/data
+       - ./podaci_baze:/var/lib/postgresql/data
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      
     restart: always
 
   # BACKEND
@@ -29,7 +31,7 @@ services:
       - /app/node_modules          
     depends_on:
       - db
-    restart: always                 # Restartuje se dok se baza ne podigne skroz
+    restart: always                 
     command: npm run start:dev
 
   # FRONTEND
@@ -47,5 +49,3 @@ services:
       - backend
     command: npx ng serve --host 0.0.0.0 --poll 2000
 
-volumes:
-  timescale-data:
