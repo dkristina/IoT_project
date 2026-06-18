@@ -5,42 +5,79 @@
       <button type="button" class="btn-close" (click)="close.emit()">×</button>
     </div>
 
-    <form [formGroup]="userForm" (ngSubmit)="submit()">
-      <div class="form-body">
-        <div class="input-group">
-          <label>Ime i prezime</label>
-          <input formControlName="fullName" type="text" placeholder="Ime i prezime">
-        </div>
+<form [formGroup]="userForm" (ngSubmit)="submit()" autocomplete="off">
+  
+  <input type="text" name="fake_username" style="display:none;" aria-hidden="true" autocomplete="username" />
+  <input type="password" name="fake_password" style="display:none;" aria-hidden="true" autocomplete="new-password" />
 
-        <div class="input-row">
-          <div class="input-group">
-            <label>Korisničko ime</label>
-            <input formControlName="username" type="text" placeholder="username">
-          </div>
-          <div class="input-group">
-            <label>Uloga</label>
-            <select formControlName="role">
-              <option value="ADMIN">ADMIN</option>
-              <option value="OPERATOR">OPERATOR</option>
-            </select>
-          </div>
-        </div>
+  <div class="form-body">
+    <div class="input-group">
+      <label>Ime i prezime</label>
+      <input formControlName="fullName" type="text" placeholder="Ime i prezime" autocomplete="off">
+    </div>
 
-        <div class="input-group">
-          <label>Email adresa</label>
-          <input formControlName="email" type="email" placeholder="email@example.com">
-        </div>
-
-        <div class="input-group">
-          <label>Lozinka (min. 6 karaktera)</label>
-          <input formControlName="password" type="password" placeholder="••••••••">
-        </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Korisničko ime</label>
+        <input formControlName="username" type="text" placeholder="username" autocomplete="one-time-code">
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="close.emit()">Otkaži</button>
-        <button type="submit" class="btn-primary" [disabled]="userForm.invalid">Kreiraj nalog</button>
+      <div class="input-group">
+        <label>Uloga</label>
+        <select formControlName="role">
+          <option value="ADMIN">ADMIN</option>
+          <option value="OPERATOR">OPERATOR</option>
+        </select>
       </div>
-    </form>
+    </div>
+
+    <div class="input-group">
+      <label>Email adresa</label>
+      <input 
+        formControlName="email" 
+        type="email" 
+        placeholder="ime.prezime@iot.rs"
+        autocomplete="off"
+        [class.input-error]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+      >
+      
+      <div *ngIf="userForm.get('email')?.errors?.['pattern'] && userForm.get('email')?.touched" class="error-message">
+        Dozvoljeni su samo korporativni e-mailovi sa domenom @iot.rs
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label>Lozinka (min. 6 kar)</label>
+        <input 
+          formControlName="password" 
+          type="password" 
+          placeholder="••••••••" 
+          autocomplete="new-password"
+          [class.input-error]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+        >
+      </div>
+      
+      <div class="input-group">
+        <label>Potvrdi lozinku</label>
+        <input 
+          formControlName="confirmPassword" 
+          type="password" 
+          placeholder="••••••••" 
+          autocomplete="new-password"
+          [class.input-error]="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="userForm.get('confirmPassword')?.errors?.['passwordMismatch'] && userForm.get('confirmPassword')?.touched" class="error-message">
+      Lozinke se ne poklapaju.
+    </div>
+
   </div>
-</div>
+
+  <div class="modal-footer">
+    <div class="global-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <button type="button" class="btn-secondary" (click)="close.emit()">Otkaži</button>
+    <button type="submit" class="btn-primary" [disabled]="userForm.invalid">Kreiraj nalog</button>
+  </div>
+</form>

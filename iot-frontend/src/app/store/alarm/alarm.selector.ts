@@ -17,20 +17,32 @@ export const selectAllAlarms = createSelector(
   selectAll
 );
 
-// 4. Selektor za dobijanje alarma kao mape (rečnika) po ID-u (za brzi pristup)
+// 4. Selektor za dobijanje alarma kao mape po ID-u 
 export const selectAlarmEntities = createSelector(
   selectAlarmState,
   selectEntities
 );
 
-// 5. Selektor za loading status (da prikažeš spiner na frontu)
+// 5. Selektor za loading status 
 export const selectAlarmsLoading = createSelector(
   selectAlarmState,
   (state) => state.loading
 );
 
-// 6. NAPREDNI SELEKTOR: Filtriranje alarma po ozbiljnosti (koristi map/filter uslov)
+// 6. NAPREDNI SELEKTOR: Filtriranje alarma po ozbiljnosti 
 export const selectCriticalAlarms = createSelector(
   selectAllAlarms,
   (alarms) => alarms.filter(a => a.severity === 'CRITICAL')
+);
+
+//7. iltriranje alarma za specifican senzor prema njegovom ID-u
+export const selectAlarmsBySensorId = (sensorId: number) => createSelector(
+  selectAllAlarms,
+  (alarms) => {
+    if (!alarms) return [];
+    // Pokrivamo obe varijante (ako backend vraća ravan sensorId ILI objekat sensor: { id })
+    return alarms.filter(alarm => 
+      Number(alarm.sensor?.id) === Number(sensorId)
+    );
+  }
 );

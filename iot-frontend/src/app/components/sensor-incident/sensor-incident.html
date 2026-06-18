@@ -1,6 +1,22 @@
 <mat-card class="incidents-card glass-card">
-  <mat-card-header>
-    <mat-card-title>Statistika i Istorija</mat-card-title>
+  <mat-card-header class="custom-card-header">
+    <mat-card-title>Statistika i Istorijska Analitika</mat-card-title>
+    
+    <div class="filter-controls">
+      <select [(ngModel)]="selectedPeriod" (change)="loadHistoricalIncidents()" class="dark-select">
+        <option value="24h">Poslednja 24h</option>
+        <option value="7d">Poslednjih 7 dana</option>
+        <option value="30d">Poslednjih 30 dana</option>
+        <option value="1y">Poslednja godina</option>
+        <option value="custom">Prilagođeno</option>
+      </select>
+
+      <div *ngIf="selectedPeriod === 'custom'" class="custom-dates">
+        <input type="date" [(ngModel)]="customFromDate" (change)="loadHistoricalIncidents()" class="dark-input">
+        <span class="to-text">do</span>
+        <input type="date" [(ngModel)]="customToDate" (change)="loadHistoricalIncidents()" class="dark-input">
+      </div>
+    </div>
   </mat-card-header>
 
   <mat-card-content>
@@ -12,25 +28,35 @@
       </canvas>
     </div>
 
+    <div class="incident-title-divider">
+      <h4>Hronologija incidenata u ovom periodu</h4>
+    </div>
+
     <div class="incident-list-container">
-      <div *ngIf="incidents && incidents.length > 0; else noIncidents">
-        <div *ngFor="let inc of incidents" class="incident-row" [class]="inc.severity.toLowerCase()">
+      <div *ngIf="filteredIncidents && filteredIncidents.length > 0; else noIncidents">
+        
+        <div *ngFor="let inc of filteredIncidents" class="incident-row" [class]="inc.severity.toLowerCase()">
           <div class="status-indicator"></div>
           <div class="incident-body">
+            
             <div class="inc-meta">
               <span class="sev-badge">{{ inc.severity }}</span>
-              <span class="time">{{ inc.createdAt | date:'dd.MM. HH:mm' }}</span>
+              <span class="time-stamp">{{ inc.createdAt | date:'dd.MM.yyyy. HH:mm' }}</span>
             </div>
-            <p class="message">{{ inc.description }}</p>
+            
+            <p class="message-text">{{ inc.description }}</p>
+            
             <div class="inc-status-line">
               <span class="status-tag">{{ inc.status }}</span>
-              <span class="operator" *ngIf="inc.assignedTo">{{ inc.assignedTo.username }}</span>
+              <span class="operator" *ngIf="inc.assignedTo">🧑‍💻 {{ inc.assignedTo.username }}</span>
             </div>
+            
           </div>
         </div>
+
       </div>
       <ng-template #noIncidents>
-        <p class="empty-msg">Nema zabeleženih incidenata.</p>
+        <p class="empty-msg">Nema zabeleženih incidenata za izabrani period.</p>
       </ng-template>
     </div>
   </mat-card-content>

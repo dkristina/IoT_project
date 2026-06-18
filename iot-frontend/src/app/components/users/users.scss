@@ -69,8 +69,9 @@
       }
 
       td {
-        padding: 20px;
+        padding: 16px 20px;
         border-bottom: 1px solid #334155;
+        vertical-align: middle;
       }
 
       tr:hover { background: rgba(56, 189, 248, 0.03); }
@@ -105,17 +106,37 @@
     &.operator { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
   }
 
+
   .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+
     .btn-action {
       background: #0f172a;
       border: 1px solid #334155;
-      padding: 8px;
+      color: #94a3b8;
+      padding: 6px;
       border-radius: 8px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.2s;
-      &:hover { background: #334155; border-color: #38bdf8; }
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover { 
+        background: #334155; 
+        color: white;
+      }
+      
+      &.btn-analytics:hover { background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8; }
+      &.btn-key:hover { background: rgba(234, 179, 8, 0.1); border-color: #eab308; color: #eab308; }
+      &.btn-trash:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
     }
   }
 }
@@ -125,4 +146,106 @@
   text-align: center;
   color: #94a3b8;
   .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+}
+
+/* RANG LISTA I DASHBOARD */
+.analytics-dashboard {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #334155;
+
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+
+    h2 { margin: 0; font-size: 1.4rem; color: white; font-weight: 700; }
+    p { margin: 4px 0 0; color: #94a3b8; font-size: 0.9rem; }
+  }
+
+  .period-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+
+    select {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      outline: none;
+      font-weight: 600;
+      &:focus { border-color: #38bdf8; }
+    }
+  }
+}
+
+.podium-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.podium-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.2s;
+
+  &:hover { transform: translateY(-3px); }
+
+  .rank-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  h3 { margin: 0; font-size: 1.1rem; color: white; }
+  span { font-size: 0.85rem; color: #64748b; }
+
+  &.gold { border-left: 5px solid #fbbf24; .rank-badge { color: #fbbf24; background: rgba(251, 191, 36, 0.1); } }
+  &.silver { border-left: 5px solid #94a3b8; .rank-badge { color: #94a3b8; background: rgba(148, 163, 184, 0.1); } }
+  &.bronze { border-left: 5px solid #cd7f32; .rank-badge { color: #cd7f32; background: rgba(205, 127, 50, 0.1); } }
+}
+
+.podium-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #334155;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    .num { font-size: 1.1rem; font-weight: 700; color: white; }
+    .lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-top: 2px; letter-spacing: 0.5px; }
+  }
+}
+
+.no-analytics-data {
+  text-align: center;
+  padding: 20px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 10px;
+  span { margin-right: 6px; }
 }

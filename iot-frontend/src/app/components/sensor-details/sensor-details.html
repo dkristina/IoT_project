@@ -57,15 +57,24 @@
     <div class="dashboard-three-columns">
       
       <div class="col">
-        <app-sensor-alarms [alarms]="sensor.alarms" [unit]="sensor.unit"></app-sensor-alarms>
+        <app-sensor-alarms 
+        [unit]="sensor.unit"
+        [sensorId]="sensor.id"></app-sensor-alarms>
       </div>
 
       <div class="col">
-        <app-sensor-incident [incidents]="incidents$ | async"></app-sensor-incident>
+        <app-sensor-incident 
+          [incidents]="incidents$ | async"
+          [sensorId]="sensor.id">
+        </app-sensor-incident>
       </div>
 
       <div class="col">
-        <app-sensor-history [measurements]="sensor.measurements" [unit]="sensor.unit"></app-sensor-history>
+        <app-sensor-history 
+          [measurements]="sensor.measurements" 
+          [unit]="sensor.unit"
+          [alarmRules]="sensor.alarms">
+        </app-sensor-history>
       </div>
 
     </div>

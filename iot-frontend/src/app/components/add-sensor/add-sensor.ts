@@ -5,6 +5,7 @@ import { SensorsService } from '../../core/services/sensor.service';
 import { SensorUnit } from '../../core/models/sensor.model';
 import { Router } from '@angular/router'; // Dodaj Router
 import { AuthService } from '../../core/services/auth';
+import { AlarmSeverity } from '../../core/models/alarm.model';
 
 @Component({
   selector: 'app-add-sensor',
@@ -24,22 +25,49 @@ export class AddSensorComponent {
   sensorData = {
     name: '',
     location: '',
-    unit: '' as SensorUnit
+    unit: '' as SensorUnit,
+    alarms: [] as Array<{ severity: AlarmSeverity; lowThreshold: number | null; highThreshold: number | null }>
   };
 
   ngOnInit() {
-    // OGRANIČENJE: Ako nije admin, vrati ga nazad i ne daj mu da vidi formu
+    // OGRANICENJE: Ako nije admin, vrati ga nazad i ne daj mu da vidi formu
     if (!this.authService.isAdmin()) {
       this.onCancel();
     }
+    this.addRule(); 
   }
 
+  addRule() {
+    if (this.sensorData.alarms.length >= 4) return;
+    this.sensorData.alarms.push({
+      severity: AlarmSeverity.CRITICAL, 
+      lowThreshold: 0,
+      highThreshold: 0
+    });
+  }
+  removeRule(index: number) {
+    this.sensorData.alarms.splice(index, 1);
+  }
   onSubmit() {
     if (!this.sensorData.name || !this.sensorData.location || !this.sensorData.unit) return;
 
-    this.sensorsService.createSensor(this.sensorData).subscribe({
+    const formattedAlarms = this.sensorData.alarms.map(alarm => ({
+    severity: alarm.severity,
+    lowThreshold: Number(alarm.lowThreshold),  
+    highThreshold: Number(alarm.highThreshold) 
+  }));
+
+
+    const payload = {
+      name: this.sensorData.name,
+      location: this.sensorData.location,
+      unit: this.sensorData.unit,
+      alarms: this.sensorData.alarms 
+    };
+
+    this.sensorsService.createSensor(payload as any).subscribe({
       next: (response) => {
-        // 1. Javi listi da se osveži
+        // 1. Javi listi da se osvezi
         this.sensorAdded.emit(); 
         // 2. Zatvori modal
         this.closeModal.emit();

@@ -26,8 +26,21 @@ export const incidentReducer = createReducer(
   on(IncidentActions.updateIncidentSuccess, (state, { incident }) => 
     adapter.upsertOne(incident, { ...state, loading: false })),
 
-  on(IncidentActions.socketIncidentReceived, (state, { incident }) => 
-    adapter.upsertOne(incident, { ...state, loading: false })),
+  on(IncidentActions.socketIncidentReceived, (state, { incident }) => {
+
+    const existingIncident = state.entities[incident.id];
+    let incidentToUpdate = { ...incident };
+    
+    if (incident.pickedUpAt) {
+      incidentToUpdate.pickedUpAt = new Date(incident.pickedUpAt);
+    }
+
+    if (existingIncident && existingIncident.status === incident.status && existingIncident.pickedUpAt) {
+      incidentToUpdate.pickedUpAt = existingIncident.pickedUpAt;
+    }
+
+    return adapter.upsertOne(incidentToUpdate, { ...state, loading: false });
+  }),
 
   on(IncidentActions.loadIncidentsFailure, (state, { error }) => ({ ...state, error, loading: false })),
 

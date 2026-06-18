@@ -25,7 +25,6 @@ export class AlarmEffects {
     ofType(AlarmActions.addAlarm),
     switchMap(({ alarm }) => this.alarmsService.create(alarm).pipe(
       map(newAlarm => AlarmActions.addAlarmSuccess({ alarm: newAlarm })),
-      tap(() => this.store.dispatch(SensorActions.loadSensors())),
       catchError(error => of(AlarmActions.alarmsLoadedFailure({ error })))
     ))
   ));
@@ -34,7 +33,6 @@ export class AlarmEffects {
     ofType(AlarmActions.deleteAlarm),
     switchMap(({ id }) => this.alarmsService.remove(id).pipe(
       map(() => AlarmActions.deleteAlarmSuccess({ id })),
-      tap(() => this.store.dispatch(SensorActions.loadSensors())),
       catchError(error => of(AlarmActions.alarmsLoadedFailure({ error })))
     ))
   ));
@@ -48,8 +46,6 @@ export class AlarmEffects {
           alarm: { id: updatedAlarm.id, changes: updatedAlarm } 
         })),
         tap((action) => {
-          // Ovde izvlačimo ID senzora iz izmenjenog alarma
-          // Pretpostavljam da tvoj Alarm model ima sensorId ili sensor.id
           const sensorId = action.alarm.changes.id; 
           if (sensorId) {
             this.store.dispatch(SensorActions.loadSensorById({ id: sensorId }));

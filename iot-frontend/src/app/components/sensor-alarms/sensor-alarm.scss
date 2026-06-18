@@ -1,22 +1,18 @@
-
 .rule-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1f2937;
+  background: #253248;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 
-  
   mat-icon {
     margin-right: 12px;
-    &.active-warn { color: #ef4444; } /* Crvena za Critical/High */
-    &:not(.active-warn) { color: #3b82f6; } /* Plava za ostale */
+    transition: color 0.2s ease;
   }
 }
-
 
 .rule-info {
   display: flex;
@@ -42,22 +38,100 @@
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.05);
-
-    &.critical { color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-    &.high { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
-    &.medium { color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
-    &.low { color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    background: #1e293b;
   }
 }
 
+// ZAJEDNIČKI SISTEM BOJA (Primenjuje se i na ikonice i na tekstualne znacke)
+mat-icon, .severity {
+  &.critical { color: #f44336 !important; border-color: rgba(244, 67, 54, 0.3); }
+  &.high { color: #ff9800 !important; border-color: rgba(255, 152, 0, 0.3); }
+  &.medium { color: #ffeb3b !important; border-color: rgba(255, 235, 59, 0.3); }
+  // POPRAVLJENO: Promenjeno iz plave (#3b82f6) u zelenu (#4caf50) da se poklopi sa grafikom
+  &.low { color: #4caf50 !important; border-color: rgba(76, 175, 80, 0.3); }
+}
 
+// Okviri se primenjuju iskljucivo na tekstualne značke ozbiljnosti
+.severity {
+  border: 1px solid transparent;
+}
 
 .actions {
   display: flex;
   gap: 5px;
 
   .edit-btn { color: #3b82f6; }
-  button[color="warn"] { color: #ef4444; }
+  button[color="warn"] { color: #f44336; }
 }
 
+// Stilovi za edit inpute ako zatrebaju
+.edit-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  .small-input {
+    width: 60px;
+    background: #374151;
+    border: 1px solid #4b5563;
+    border-radius: 4px;
+    color: white;
+    padding: 2px 5px;
+    text-align: center;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+  }
+
+  .unit-label {
+    color: #9ca3af;
+    font-size: 13px;
+  }
+}
+
+
+.custom-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 15px;
+
+  .add-btn {
+    color: #3b82f6;
+    mat-icon {
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+    }
+    &:hover {
+      color: #60a5fa;
+    }
+  }
+}
+
+.no-alarms-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 10px;
+  color: #64748b;
+  text-align: center;
+
+  .no-alarms-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
+    color: #475569;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}

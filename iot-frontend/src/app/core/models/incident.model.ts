@@ -16,6 +16,8 @@ export interface Incident {
   status: IncidentStatus;
   createdAt: Date;
   resolvedAt?: Date;
+  pickedUpAt?: Date;
   assignedTo?: User;
   sensor?: Sensor;
+  historyLogs?: string;
 }

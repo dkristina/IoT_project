@@ -3,26 +3,20 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UsersService } from '../../core/services/user.service';
 import { UserActions } from './user.actions';
 import { switchMap, map, catchError, mergeMap, of } from 'rxjs';
-import { AuthService } from '../../core/services/auth';
+
 
 @Injectable()
 export class UserEffects {
   private actions$ = inject(Actions);
   private usersService = inject(UsersService);
-  private authService = inject(AuthService);
-  // switchMap: Odličan za load/search jer otkazuje prethodni zahtev ako stigne novi
+ 
   loadUsers$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.loadUsers),
     switchMap(() => {
-      // 2. Provera uloge: Admin dobija sve, Operator samo kolege
-      const request$ = this.authService.isAdmin() 
-        ? this.usersService.findAll() 
-        : this.usersService.findOperators();
-
-      return request$.pipe(
-        map(users => UserActions.loadUsersSuccess({ users })),
-        catchError(error => of(UserActions.loadUsersFailure({ error })))
-      );
+      return this.usersService.findAll().pipe(
+      map(users => UserActions.loadUsersSuccess({ users })),
+      catchError(error => of(UserActions.loadUsersFailure({ error })))
+    );
     })
   ));
 

@@ -1,4 +1,73 @@
 <div class="users-page">
+  
+  <div class="analytics-dashboard" *ngIf="isAdmin && (leaderboard$ | async) as leaders">
+    <div class="analytics-header">
+      <div class="analytics-title">
+        <h2>🏆 Rang Lista i Učinak </h2>
+        <p>Najbrži i najefikasniji članovi tima u rešavanju incidenata</p>
+      </div>
+      
+      <div class="period-selector">
+        <label>📅 Vremenski period: </label>
+        <select (change)="onPeriodChange($event)">
+          <option value="24h" selected>Poslednja 24 sata</option>
+          <option value="7d">Poslednjih 7 dana</option>
+          <option value="30d">Poslednjih 30 dana</option>
+          <option value="all">Sve vreme</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="podium-grid" *ngIf="leaders.length > 0; else noLeaderData">
+      
+      <div class="podium-card gold" *ngIf="leaders[0]">
+        <div class="rank-badge">🥇 1st</div>
+        <div class="podium-user">
+          <h3>{{ leaders[0].name }}</h3>
+          <span>@{{ leaders[0].username }}</span>
+        </div>
+        <div class="podium-stats">
+          <div class="stat"><span class="num">{{ leaders[0].resolvedCount }}</span><span class="lbl">Rešeno</span></div>
+          <div class="stat"><span class="num">{{ leaders[0].avgResolutionTimeMin }} min</span><span class="lbl">Prosek rada</span></div>
+          <div class="stat"><span class="num">{{ leaders[0].successPercentage }}%</span><span class="lbl">Uspeh</span></div>
+        </div>
+      </div>
+
+      <div class="podium-card silver" *ngIf="leaders[1]">
+        <div class="rank-badge">🥈 2nd</div>
+        <div class="podium-user">
+          <h3>{{ leaders[1].name }}</h3>
+          <span>@{{ leaders[1].username }}</span>
+        </div>
+        <div class="podium-stats">
+          <div class="stat"><span class="num">{{ leaders[1].resolvedCount }}</span><span class="lbl">Rešeno</span></div>
+          <div class="stat"><span class="num">{{ leaders[1].avgResolutionTimeMin }} min</span><span class="lbl">Prosek</span></div>
+          <div class="stat"><span class="num">{{ leaders[1].successPercentage }}%</span><span class="lbl">Uspeh</span></div>
+        </div>
+      </div>
+
+      <div class="podium-card bronze" *ngIf="leaders[2]">
+        <div class="rank-badge">🥉 3rd</div>
+        <div class="podium-user">
+          <h3>{{ leaders[2].name }}</h3>
+          <span>@{{ leaders[2].username }}</span>
+        </div>
+        <div class="podium-stats">
+          <div class="stat"><span class="num">{{ leaders[2].resolvedCount }}</span><span class="lbl">Rešeno</span></div>
+          <div class="stat"><span class="num">{{ leaders[2].avgResolutionTimeMin }} min</span><span class="lbl">Prosek</span></div>
+          <div class="stat"><span class="num">{{ leaders[2].successPercentage }}%</span><span class="lbl">Uspeh</span></div>
+        </div>
+      </div>
+
+    </div>
+    
+    <ng-template #noLeaderData>
+      <div class="no-analytics-data">
+        <span>ℹ️</span> Nema zabeleženih rešenih incidenata za izabrani vremenski period.
+      </div>
+    </ng-template>
+  </div>
+
   <div class="header-section">
     <div class="title-group">
       <h1>Korisnici sistema</h1>
@@ -60,11 +129,14 @@
             </td>
             <td *ngIf="isAdmin">
               <div class="action-buttons">
+                <button (click)="openAnalytics(user)" class="btn-action btn-analytics" title="Detaljna statistika učinka">
+                  <mat-icon>bar_chart</mat-icon>
+                </button>
                 <button (click)="handleUpdatePassword(user)" class="btn-action btn-key" title="Promeni lozinku">
-                  🔑
+                  <mat-icon>vpn_key</mat-icon>
                 </button>
                 <button (click)="handleDelete(user.id)" class="btn-action btn-trash" title="Obriši korisnika">
-                  🗑️
+                  <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </td>

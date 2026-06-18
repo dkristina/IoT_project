@@ -1,61 +1,180 @@
-.incidents-card {
+:host {
+  display: block;
+  height: 100%;
+}
+
+.incidents-card.glass-card {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+  border-radius: 12px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: transparent;
+}
 
-  .chart-box {
-    background: rgba(255, 255, 255, 0.02);
-    height: 180px;
-    margin-bottom: 20px;
+.custom-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 100%;
+  padding: 16px 16px 0 16px;
+
+  mat-card-title {
+    color: #ffffff !important;
+    font-size: 1.2rem;
+    font-weight: 500;
   }
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .custom-dates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .to-text {
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// Tamni stilovi za selektore i kalendare
+.dark-select, .dark-input {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  color: #ffffff !important;
+  padding: 6px 12px;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.85rem;
+  transition: border-color 0.2s;
+
+  option {
+    background: #1f2937;
+    color: #ffffff;
+  }
+
+  &:focus {
+    border-color: #3498db !important;
+  }
+}
+
+mat-card-content {
+  padding: 16px !important;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.chart-box {
+  height: 160px; 
+  width: 100%;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.incident-title-divider {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 15px;
+
+  h4 {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.empty-msg {
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.incident-list-container {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-top: 10px;
 }
 
 .incident-row {
   display: flex;
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  transition: transform 0.2s;
+  background: #253248;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-left: 4px solid #9ca3af;
+  position: relative;
 
-  &:hover { background: #242f3f;}
+  // Dinamičke boje levih ivica u zavisnosti od severity-ja
+  &.low { border-left-color: #4caf50; }
+  &.medium { border-left-color: #ffeb3b; }
+  &.high { border-left-color: #ff9800; }
+  &.critical { border-left-color: #f44336; }
+}
 
-  .status-indicator { width: 6px; }
+.incident-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
 
-  // Boje na osnovu severity-ja
-  &.critical { .status-indicator { background: #f44336; } .sev-badge { color: #f44336; } }
-  &.high { .status-indicator { background: #ff9800; } .sev-badge { color: #ff9800; } }
-  &.medium { .status-indicator { background: #ffeb3b; } .sev-badge { color: #fbc02d; } }
-  &.low { .status-indicator { background: #4caf50; } .sev-badge { color: #4caf50; } }
+.inc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px; // Pravi lepu pauzu između LOW i datuma
 
-  .incident-body {
-    padding: 12px;
-    flex: 1;
-
-    .inc-meta {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      .sev-badge { font-weight: bold; font-size: 11px; }
-      .time { color: #9ca3af; font-size: 11px; }
-    }
-
-    .message { margin: 4px 0; font-size: 13px; color: #ffffff; }
-
-    .inc-status-line {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
-      font-size: 11px;
-      .status-tag { font-weight: 600; color: #3b82f6;}
-      .operator { display: flex; align-items: center; gap: 4px; color: #9ca3af; mat-icon { font-size: 14px; width: 14px; height: 14px; } }
-    }
+  .sev-badge {
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .time-stamp {
+    color: #9ca3af;
+    font-size: 0.8rem;
   }
 }
 
-.scroll-area {
-  max-height: 400px;
-  overflow-y: auto;
+.message-text {
+  margin: 0;
+  color: #e5e7eb;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.inc-status-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 0.75rem;
+
+  .status-tag {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .operator {
+    color: #9ca3af;
+  }
 }

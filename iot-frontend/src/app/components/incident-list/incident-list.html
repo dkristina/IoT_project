@@ -8,10 +8,17 @@
       @for (incident of incidents$ | async; track incident.id) {
         <div class="incident-card" 
              [class]="'status-' + incident.status.toLowerCase()"
-             [class.critical]="incident.severity === 'CRITICAL'">
+             [class.critical]="incident.severity === 'CRITICAL'"
+             [class.abandoned]="hasBeenAbandoned(incident.historyLogs)">
           
           <div class="card-header">
-            <span class="severity-badge">{{ incident.severity }}</span>
+            <div class="badges-row">
+              <span class="severity-badge">{{ incident.severity }}</span>
+              
+              @if (hasBeenAbandoned(incident.historyLogs) && incident.status !== 'RESOLVED') {
+                <span class="abandoned-badge" matTooltip="Neko je već odustao od ovog zadatka!">⚠️ Prepušteno</span>
+              }
+            </div>
             <span class="time">{{ incident.createdAt | date:'HH:mm:ss' }}</span>
           </div>
 
@@ -26,11 +33,12 @@
                 <span class="avatar">👤</span>
                 <div class="operator-details">
                   <span class="work-label">Radi na ovome:</span>
+                  
                   <strong class="operator-name">
-                    {{ incident.assignedTo?.username || 'Korisnik #' + incident.assignedTo.id }}
+                    {{ incident.assignedTo.username || 'Korisnik #' + incident.assignedTo.id }}
                   </strong>
                   
-                  @if (incident.assignedTo && incident.assignedTo.role) {
+                  @if (incident.assignedTo.role) {
                     <span class="role-badge" [ngClass]="incident.assignedTo.role.toLowerCase()">
                         {{ incident.assignedTo.role }}
                     </span>
@@ -40,7 +48,7 @@
                 </div>
               </div>
             } @else if (incident.status !== 'RESOLVED') {
-              <button class="btn-claim" (click)="claimIncident(incident.id)">
+              <button class="btn-claim" (click)="claimIncident(incident)">
                 Preuzmi zadatak
               </button>
             }
@@ -53,6 +61,10 @@
               @if (incident.status === 'RESOLVED') {
                 <span class="resolved-check">✔ Rešeno </span>
               }
+            </div>
+            
+            <div class="history-preview" *ngIf="incident.historyLogs" style="font-size: 11px; color: #a3a3a3; margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;">
+              ⏳ {{ incident.historyLogs }}
             </div>
           </div>
         </div>

@@ -40,17 +40,17 @@ body {
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100%; /* Promeni height u min-height */
+  min-height: 100%; 
   width: 100%;
-  overflow-y: auto;  /* PROMENI hidden U auto */
+  overflow-y: auto; 
 }
 
-/* I ovo proveri za svaki slučaj */
+
 .main-content {
   min-height: 100vh;
   background-color: #0f172a;
   display: block; 
-  overflow-y: visible; /* Ovo je dobro, ne diraj */
+  overflow-y: visible; 
 }
 * {
   box-sizing: border-box;
@@ -79,42 +79,61 @@ html, body {
 
 /* GLOBALNO PREGAŽENJE ZA ALARME */
 .alarms-card.glass-card {
-  background-color: #161f2e !important;
-  background: #161f2e !important;
+  background-color: #1e293b !important;
+  
   border: 1px solid #1f2937 !important;
   color: white !important;
 }
 
-/* Ovo gađa direktno unutrašnju senku i pozadinu Material kartice */
+/* Ovo gadja direktno unutraanju senku i pozadinu Material kartice */
 .alarms-card.glass-card .mat-mdc-card-content,
 .alarms-card.glass-card .mat-mdc-card-header {
-  background-color: transparent !important;
   background: transparent !important;
 }
 
-.alarms-card.glass-card .mat-mdc-card-title {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
 
 /* GLOBALNA POPRAVKA ZA INPUTE */
 
-/* 1. Boja teksta dok kucaš */
+
 .mat-mdc-input-element {
   color: white !important;
-  caret-color: white !important; /* I ona crtica što trepće da bude bela */
+  caret-color: white !important; 
 }
 
-/* 2. Boja onog "placeholder" teksta (Ime ili lokacija...) */
 .mat-mdc-input-element::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* 3. Boja labele (ono što piše "Pretraga") */
 .mat-mdc-form-field-label mat-label {
   color: white !important;
 }
 
-/* 4. Da ne pocrni pozadina kad klikneš (focus) */
 .mat-mdc-form-field-focus-indicator {
   background: transparent !important;
+}
+
+.cdk-overlay-pane {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+.dark-dialog-panel {
+  background: transparent !important;
+  box-shadow: none !important;
+
+
+  mat-dialog-container, 
+  .mat-mdc-dialog-container,
+  .mdc-dialog__container {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mdc-dialog__surface {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
 }

@@ -11,7 +11,7 @@ $severity-colors: (
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
-  background-color: #0b111e;
+  background-color: #0f172a;
 
   header {
     display: flex;
@@ -31,10 +31,10 @@ $severity-colors: (
     gap: 20px;
 
     .alarm-card {
-      background: #161f2e;
+      background: #1e293b;
       border-radius: 12px;
       padding: 20px;
-      border: 1px solid #1f2937;
+      border: 1px solid (255, 255, 255, 0.05);
       border-top: 5px solid #ccc; 
       display: flex;
       flex-direction: column;
@@ -73,9 +73,9 @@ $severity-colors: (
 
       .btn-delete {
         margin-top: auto;
-        background: #0b111e !important; /* Tamna boja kao pozadina stranice */
-        color: #9ca3af !important;      /* Sivi tekst, neupadljiv */
-        border: 1px solid #374151 !important; /* Diskretan border */
+        background: #0b111e !important; 
+        color: #9ca3af !important;      
+        border: 1px solid #374151 !important; 
         padding: 8px;
         border-radius: 6px;
         cursor: pointer;
@@ -83,9 +83,9 @@ $severity-colors: (
         transition: all 0.2s;
 
         &:hover {
-          background: #1f2937 !important; /* Malo svetlija siva na hover */
-          color: #ffffff !important;      /* Bela slova na hover */
-          border-color: #3b82f6 !important; /* Plavi border da znaš šta brišeš */
+          background: #1f2937 !important; 
+          color: #ffffff !important;     
+          border-color: #3b82f6 !important; 
         }
       }
     }

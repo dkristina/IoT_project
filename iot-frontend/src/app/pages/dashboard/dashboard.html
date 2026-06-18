@@ -56,7 +56,7 @@
       <div class="dashboard-content-grid">
         
         <div class="chart-container-card">
-          <h3>Distribucija alarma</h3>
+          <h3>Distribucija incidenata</h3>
           <div class="canvas-wrapper">
             <canvas baseChart
               [data]="doughnutChartData"
@@ -70,16 +70,18 @@
           <h3>Poslednje aktivnosti</h3>
           <div class="activity-list">
             <div *ngFor="let item of recentIncidents$ | async" class="activity-item">
-              <div class="unit-badge">{{ getUnitIcon(item.sensor?.unit) }}</div>
               
-              <div class="activity-info">
-                <p class="desc">{{ item.description }}</p>
-                <div class="meta-row">
-                  <small>{{ item.sensor?.name }} • {{ item.createdAt | date:'HH:mm' }}h</small>
-                  
-                  <span *ngIf="item.assignedTo" class="assigned-user">
+              <div class="activity-main-content">
+                <div class="unit-badge">{{ getUnitIcon(item.sensor?.unit) }}</div>
+                
+                <div class="texts">
+                  <p class="desc">{{ item.description }}</p>
+                  <div class="meta-row">
+                    <small>{{ item.sensor?.name }} • {{ item.createdAt | date:'HH:mm' }}h</small>
+                    <span *ngIf="item.assignedTo" class="assigned-user">
                       👤 {{ item.assignedTo.username || item.assignedTo }}
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
 

@@ -42,6 +42,12 @@
     padding: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;
     background: rgba(15, 23, 42, 0.2);
     
+    .global-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-right: auto; 
+    }
+
     button { padding: 0.7rem 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; }
     .btn-secondary { background: transparent; border: 1px solid #334155; color: #94a3b8; }
     .btn-primary { 
@@ -49,4 +55,15 @@
       &:disabled { opacity: 0.5; cursor: not-allowed; }
     }
   }
+}
+
+.error-message {
+  color: #ef4444;       
+  font-size: 0.8rem;    
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.input-error {
+  border-color: #ef4444 !important; 
 }

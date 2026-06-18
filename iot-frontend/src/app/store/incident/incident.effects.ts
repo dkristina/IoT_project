@@ -44,14 +44,14 @@ export class IncidentEffects implements OnInitEffects{
   ));
 
   showNotification$ = createEffect(() => this.actions$.pipe(
-    ofType(IncidentActions.createIncidentSuccess, IncidentActions.socketIncidentReceived),
+    ofType(IncidentActions.createIncidentSuccess, IncidentActions.socketIncidentReceived, IncidentActions.socketNewIncidentNotificationOnly),
     tap(({ incident }) => {
 
       if (incident.status !== 'NEW') {
         return; 
       }
       // Određujemo klasu na osnovu stvarnog severity-ja incidenta
-      let snackClass = 'info-snackbar'; // default
+      let snackClass = 'info-snackbar';
       
       switch (incident.severity) {
         case 'CRITICAL': snackClass = 'red-snackbar'; break;
@@ -69,25 +69,29 @@ export class IncidentEffects implements OnInitEffects{
     })
   ), { dispatch: false });
 
-  takeIncident$ = createEffect(() => this.actions$.pipe(
-    ofType(IncidentActions.takeIncident),
-    switchMap(({ id, userId }) => {
-      return zip(
-        this.incidentService.takeIncident(id, userId), 
-        of(JSON.parse(localStorage.getItem('user_data') || '{}'))
-      ).pipe(
-        map(([incident, currentUser]) => {
-         
-          const enrichedIncident = {
-            ...incident,
-            assignedTo: currentUser 
-          };
-          return IncidentActions.updateIncidentSuccess({ incident: enrichedIncident });
-        }),
-        catchError(error => of(IncidentActions.updateIncidentFailure({ error })))
-      );
-    })
-  ));
+ takeIncident$ = createEffect(() => this.actions$.pipe(
+  ofType(IncidentActions.takeIncident),
+  switchMap(({ id, userId }) => {
+    return zip(
+      this.incidentService.takeIncident(id, userId), 
+      of(JSON.parse(localStorage.getItem('user_data') || '{}'))
+    ).pipe(
+      map(([incident, currentUser]) => {
+        //Ekscplicitno uzimamo vreme kada je trenutni korisnik stvarno preuzeo zadatak 
+        //osigurava da front odham dobije tacno vreme za racunanje, pre nego sto websocker posalje bilo sta drugo 
+        const enrichedIncident = {
+          ...incident,
+          
+          pickedUpAt: incident.pickedUpAt ? new Date(incident.pickedUpAt) : new Date(),
+          assignedTo: currentUser 
+        };
+        
+        return IncidentActions.updateIncidentSuccess({ incident: enrichedIncident });
+      }),
+      catchError(error => of(IncidentActions.updateIncidentFailure({ error })))
+    );
+  })
+));
 
 
 loadIncidentsBySensor$ = createEffect(() => this.actions$.pipe(
@@ -100,19 +104,20 @@ loadIncidentsBySensor$ = createEffect(() => this.actions$.pipe(
   )
 ));
 
-initWebsocketStreams$ = createEffect(() => {
-    return this.webSocketService.listenToIncidents().pipe(
-      tap(data => console.log('STIGAO NOVI INCIDENT PREKO SOKETA:', data)),
-      map(incident => IncidentActions.socketIncidentReceived({ incident }))
-    );
-  });
+initWebsocketStreams$ = createEffect(() => this.actions$.pipe(
+    ofType('[Incident] Initialize WebSockets'),
+    switchMap(() => this.webSocketService.listenToIncidents().pipe(
+      tap(data => console.log('Soket primio NOVI incident:', data)),
+      map(incident => IncidentActions.socketNewIncidentNotificationOnly({ incident }))
+    ))
+  ));
 
-  // ISPRAVLJENO: Koristi se this.webSocketService
-  initWebsocketUpdates$ = createEffect(() => {
-    return this.webSocketService.listenToIncidentUpdates().pipe(
-      tap(data => console.log('STIGAO UPDATE PREKO SOKETA:', data)),
+  initWebsocketUpdates$ = createEffect(() => this.actions$.pipe(
+    ofType('[Incident] Initialize WebSockets'),
+    switchMap(() => this.webSocketService.listenToIncidentUpdates().pipe(
+      tap(data => console.log('Soket primio UPDATE:', data)),
       map(incident => IncidentActions.socketIncidentReceived({ incident }))
-    );
-  });
+    ))
+  ));
 }
 

@@ -1,22 +1,18 @@
 $navbar-height: 70px;
 
 .dashboard-container {
-  padding: 0; // Sklanjamo padding odavde da bi grid išao od ivice do ivice ako treba
-  background: #0b111e;
+  padding: 0; 
+  background: #0f172a;
   color: #e5e7eb;
-  
-  // OVO JE KLJUČNO: Kontejner zauzima preostali prostor na ekranu
-  
   display: flex;
-  flex-direction: column; // Ređamo zaglavlje pa grid jedno ispod drugog
-  
+  flex-direction: column; 
 }
 
 header {
-  padding: 1.5rem 2rem; // Vraćamo padding ovde
+  padding: 1.5rem 2rem; 
   border-bottom: 1px solid #1f2937;
-  background: #0b111e; // Da se ne providi grid ispod njega
-  flex-shrink: 0; // Ne dozvoljavamo zaglavlju da se skuplja
+  background:#0f172a;
+  flex-shrink: 0; 
 
   h1 {
     margin: 0;
@@ -27,24 +23,22 @@ header {
   }
 }
 
-
-
 .incident-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-  padding-bottom: 2rem; // Dodatni prostor na dnu da poslednja kartica ne "lepi"
+  padding: 1.5rem 2rem 2rem 2rem; 
 }
 
-
 .incident-card {
-  background: #161f2e;
+  background: #1e293b;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   border: 1px solid #1f2937;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease; 
 
   &.critical {
     border-top: 4px solid #ef4444;
@@ -52,7 +46,33 @@ header {
   }
 
   &.status-in_progress { border-top: 4px solid #3b82f6; }
-  &.status-resolved { opacity: 0.6; filter: grayscale(0.5); }
+  
+
+  &.status-resolved { 
+    opacity: 0.4; 
+    filter: grayscale(0.8); 
+    border-top: 4px solid #10b981;
+    box-shadow: none;
+  }
+
+
+  &.abandoned:not(.status-resolved) {
+    border-left: 4px solid #f59e0b; 
+    background: #1e293b;
+    box-shadow: 0 4px 25px rgba(245, 158, 11, 0.1);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .badges-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+  }
 
   .severity-badge {
     background: #374151;
@@ -60,6 +80,18 @@ header {
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: bold;
+  }
+
+
+  .abandoned-badge {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
   }
 
   .assignment-box {
@@ -78,17 +110,8 @@ header {
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    transition: background 0.2s;
     &:hover { background: #2563eb; }
-  }
-
-  .btn-resolve {
-    background: #10b981;
-    border: none;
-    color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    &:hover { background: #059669; }
   }
 }
 
@@ -109,7 +132,7 @@ header {
 
 .status-resolved {
   .card-body, .card-header {
-    opacity: 0.5; // Malo "ugasimo" karticu jer više nije hitna
+    opacity: 0.6; 
   }
 }
 
@@ -140,7 +163,6 @@ header {
     white-space: nowrap; 
   }
 }
-
 
 .role-badge {
   padding: 1px 6px;

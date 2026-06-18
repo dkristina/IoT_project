@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { IncidentActions } from '../../store/incident/incident.actions';
 import { Store } from '@ngrx/store';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class LoginComponent {
   // Injekcija zavisnosti pomocu inject() ili preko konstruktora
   private router = inject(Router);
   private store = inject(Store);
+  private snackBar = inject(MatSnackBar);
 
   constructor(
     private authService: AuthService,
@@ -66,6 +68,12 @@ export class LoginComponent {
   }
 
   onForgotPassword() {
-    alert('Obratite se administratoru za reset lozinke.');
+    // 🚀 Избачен ружни alert(), додат прелепи SnackBar
+    this.snackBar.open('Obratite se administratoru za reset lozinke.', 'Zatvori', {
+      duration: 4000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['modern-snackbar'] // Ово ти омогућава да у CSS-у лако обојиш позадину
+    });
   }
 }

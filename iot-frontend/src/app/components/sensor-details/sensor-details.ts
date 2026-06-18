@@ -23,6 +23,8 @@ import { AuthService } from '../../core/services/auth';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { selectSensorIncidentHistory } from '../../store/incident/incident.selector';
 import { SensorIncidentComponent } from '../sensor-incident/sensor-incident';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ManualIncidentDialogComponent } from '../manual-incident-dialog/manual-incident-dialog';
 
 @Component({
   selector: 'app-sensor-details',
@@ -39,7 +41,8 @@ import { SensorIncidentComponent } from '../sensor-incident/sensor-incident';
     MatTooltipModule, 
     SensorHistoryComponent,
     SensorAlarmsComponent,
-    SensorIncidentComponent
+    SensorIncidentComponent, 
+    MatDialogModule
   ]
 })
 export class SensorDetailsComponent implements OnInit {
@@ -47,7 +50,9 @@ export class SensorDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   public authService = inject(AuthService); 
   private wsService = inject(WebsocketService);
+  private dialog = inject(MatDialog);
   
+  private activeIncidentsList: any[] = [];
   currentSensor: any = null;
   
   
@@ -60,7 +65,8 @@ export class SensorDetailsComponent implements OnInit {
   //Prati istoriju incidenata za ovaj sensor 
   incidents$ = this.route.paramMap.pipe(
     map(params => Number(params.get('id'))),
-    switchMap(id => this.store.select(selectSensorIncidentHistory(id)))
+    switchMap(id => this.store.select(selectSensorIncidentHistory(id))),
+    tap(incidents => this.activeIncidentsList = incidents || [])
   );
 
   loading$ = this.store.select(selectLoading);
@@ -93,34 +99,47 @@ export class SensorDetailsComponent implements OnInit {
   reportManualIncident() {
     if (!this.currentSensor) return;
 
-    const reason = window.prompt('Opišite problem:');
-    if (!reason) return;
+    // Provera: Da li senzor vec ima aktivan incident
+    const hasActive = this.activeIncidentsList.some(inc => inc.status !== 'RESOLVED' && inc.status !== 'CLOSED');
 
-    // LOGIKA ZA SEVERITY: 
-    let suggestedSeverity = AlarmSeverity.MEDIUM; 
     
-    if (this.currentSensor.alarms && this.currentSensor.alarms.length > 0) {
-      const hasCritical = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.CRITICAL);
-      const hasHigh = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.HIGH);
-      const hasLow = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.LOW);
+    const dialogRef = this.dialog.open(ManualIncidentDialogComponent, {
+      width: '520px',
+      disableClose: true, 
+      data: { hasActiveIncident: hasActive } 
+    });
 
-      if (hasCritical) suggestedSeverity = AlarmSeverity.CRITICAL;
-      else if (hasHigh) suggestedSeverity = AlarmSeverity.HIGH;
-      else if(hasLow) suggestedSeverity = AlarmSeverity.LOW; 
-    }
+    dialogRef.afterClosed().subscribe(result => {
+      // Ako je korisnik otkazao ili poslao prazan string, prekidamo akciju
+      if (!result || !result.description.trim()) return;
 
-    this.authService.currentUser$.pipe(take(1)).subscribe(user => {
-      const creatorName = user?.username || 'Admin';
+      let suggestedSeverity = AlarmSeverity.MEDIUM; 
+      
+      if (this.currentSensor.alarms && this.currentSensor.alarms.length > 0) {
+        const hasCritical = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.CRITICAL);
+        const hasHigh = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.HIGH);
+        const hasLow = this.currentSensor.alarms.some((a: any) => a.severity === AlarmSeverity.LOW);
 
-      const newIncident = {
-        description: `[RUČNA PRIJAVA - ${creatorName}]: ${reason}`, 
-        severity: suggestedSeverity, // Ovde sada ide prepisana vrednost iz pravila alarma
-        sensorId: Number(this.currentSensor.id),
-        status: IncidentStatus.NEW 
+        if (hasCritical) suggestedSeverity = AlarmSeverity.CRITICAL;
+        else if (hasHigh) suggestedSeverity = AlarmSeverity.HIGH;
+        else if(hasLow) suggestedSeverity = AlarmSeverity.LOW; 
       }
 
-      this.store.dispatch(IncidentActions.createIncident({ incident: newIncident }));
-      console.log(`Kreiran incident sa ozbiljnošću: ${suggestedSeverity}`);
+      
+      this.authService.currentUser$.pipe(take(1)).subscribe(user => {
+        const creatorName = user?.username || 'Admin';
+
+        const newIncident = {
+          description: `[RUČNA PRIJAVA - ${creatorName}]: ${result.description}`, 
+          severity: suggestedSeverity, 
+          sensorId: Number(this.currentSensor.id),
+          status: IncidentStatus.NEW 
+        };
+
+        
+        this.store.dispatch(IncidentActions.createIncident({ incident: newIncident }));
+        console.log(`Incident poslat sa nivoom: ${suggestedSeverity}`);
+      });
     });
-}
+  }
 }

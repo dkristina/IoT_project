@@ -38,6 +38,18 @@
           <mat-label>Email</mat-label>
           <input matInput #emailInput [value]="user.email">
         </mat-form-field>
+
+        <div class="password-row" *ngIf="isEditing">
+          <mat-form-field appearance="outline" class="edit-input">
+            <mat-label>Nova lozinka (min. 6 kar.)</mat-label>
+            <input matInput #passwordInput type="password" placeholder="Unesite lozinku">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="edit-input">
+            <mat-label>Potvrdite lozinku</mat-label>
+            <input matInput #confirmPasswordInput type="password" placeholder="Ponovite lozinku">
+          </mat-form-field>
+        </div>
       </div>
       
       <button *ngIf="isEditing || selectedAvatar" mat-flat-button color="primary" class="save-btn" 
@@ -63,9 +75,25 @@
             </div>
             <p class="desc">{{ inc.description }}</p>
             
-            <button mat-flat-button color="accent" class="resolve-btn" (click)="resolve(inc.id)">
-              <mat-icon>check_circle</mat-icon> ZATVORI INCIDENT
-            </button>
+            <div class="time-meta-info" *ngIf="inc.pickedUpAt">
+              <mat-icon>play_circle_outline</mat-icon>
+              <span>Preuzeto u: <strong>{{ inc.pickedUpAt | date:'HH:mm' }}</strong></span>
+            </div>
+
+            <div class="profile-actions-row" style="display: flex; gap: 10px; margin-top: 15px;">
+              <button mat-flat-button color="accent" class="resolve-btn" (click)="resolve(inc.id)" style="flex: 2;">
+                <mat-icon>check_circle</mat-icon> ZATVORI INCIDENT
+              </button>
+
+              <button mat-flat-button color="warn" class="abandon-btn" (click)="abandon(inc.id)" style="flex: 1; background-color: #e11d48;">
+                <mat-icon>backspace</mat-icon> ODUSTANI
+              </button>
+            </div>
+
+            <div class="history-log-box" *ngIf="inc.historyLogs" style="margin-top: 12px; font-size: 11px; color: #a3a3a3; background: rgba(255,255,255,0.03); padding: 6px 10px; border-radius: 4px; border-left: 3px solid #60a5fa; line-height: 1.4;">
+              <strong>Staze kretanja:</strong> {{ inc.historyLogs }}
+            </div>
+
           </mat-card-content>
         </mat-card>
         <div *ngIf="active.length === 0" class="empty-msg">Nema aktivnih zadataka.</div>
@@ -82,6 +110,21 @@
               <span class="resolved-tag">REŠENO</span>
             </div>
             <p class="desc">{{ inc.description }}</p>
+
+            <div class="resolved-meta-grid">
+              <div class="time-meta-info" *ngIf="inc.resolvedAt">
+                <mat-icon>done_all</mat-icon>
+                <span>Rešeno u: <strong>{{ inc.resolvedAt | date:'HH:mm' }}</strong></span>
+              </div>
+              <div class="duration-badge" *ngIf="inc.pickedUpAt && inc.resolvedAt">
+                ⏱️ Radilo se: <strong>{{ getWorkTime(inc) }}</strong>
+              </div>
+            </div>
+
+            <div class="history-log-box" *ngIf="inc.historyLogs" style="margin-top: 12px; font-size: 11px; color: #888; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 4px; border-left: 3px solid #10b981; line-height: 1.4;">
+              <strong>Kompletna istorija:</strong> {{ inc.historyLogs }}
+            </div>
+
           </mat-card-content>
         </mat-card>
         <div *ngIf="resolved.length === 0" class="empty-msg">Nema istorije rešenih incidenata.</div>

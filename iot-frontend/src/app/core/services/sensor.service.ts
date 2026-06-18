@@ -28,8 +28,8 @@ export class SensorsService {
   }
 
   // 3. Kreiranje novog senzora (POST) - Samo za ADMIN-a na backendu
-  createSensor(sensorData: Partial<Sensor>): Observable<Sensor> {
-    return this.http.post<Sensor>(this.apiUrl, sensorData);
+  createSensor(sensorData: any): Observable<Sensor> {
+    return this.http.post<any>(this.apiUrl, sensorData);
   }
 
   // 4. Azuriranje senzora (PATCH /sensors/:id)

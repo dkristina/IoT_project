@@ -33,9 +33,11 @@ export class IncidentService {
   }
 
   // 4. Azuriranje incidenta (PATCH /incidents/:id)
-  update(id: number, incidentData: Partial<Incident>): Observable<Incident> {
-    return this.http.patch<Incident>(`${this.apiUrl}/${id}`, incidentData);
-  }
+ update(id: number, incidentData: any): Observable<Incident> {
+  const body = incidentData.changes ? incidentData.changes : incidentData;
+
+  return this.http.patch<Incident>(`${this.apiUrl}/${id}`, body);
+}
 
   // 5. Brisanje incidenta (DELETE /incidents/:id)
   remove(id: number): Observable<any> {
@@ -43,14 +45,23 @@ export class IncidentService {
   }
 
   //pomocna metoda
+  // pomocna metoda
   takeIncident(incidentId: number, userId: number): Observable<Incident> {
+    const currentUser = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const username = currentUser.username || 'operator';
+
+    const now = new Date();
+    const timeStr = now.toTimeString().split(' ')[0].substring(0, 5);
+
     const changes = {
       assignedToId: userId,
-      status: IncidentStatus.IN_PROGRESS
+      status: IncidentStatus.IN_PROGRESS,
+      // 🚀 Šaljemo samo poruku da je ovaj korisnik preuzeo
+      historyLogs: `@${username} preuzeo u ${timeStr}`
     };
+
     return this.update(incidentId, changes as any);
   }
-
   findBySensor(sensorId: number): Observable<Incident[]> {
     return this.http.get<Incident[]>(`${this.apiUrl}/sensor/${sensorId}`);
   }

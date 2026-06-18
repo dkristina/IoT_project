@@ -19,8 +19,8 @@ import { AuthService } from "../../core/services/auth";
     .filter-box { 
       margin-bottom: 25px; 
       padding: 15px; 
-      background: #161f2e; /* Tamna pozadina kao na dashboardu */
-      border: 1px solid #1f2937;
+      background: #1e293b; /* Tamna pozadina kao na dashboardu */
+      border: 1px solid (255, 255, 255, 0.05);
       border-radius: 12px;
       display: flex;
       flex-direction: column;
@@ -33,7 +33,7 @@ import { AuthService } from "../../core/services/auth";
       font-weight: 600;
     }
     input {
-      background: #0b111e;
+      background: #1e293b;
       border: 1px solid #374151;
       color: white !important; /* Bela slova dok kucaš */
       padding: 10px 15px;
@@ -63,7 +63,7 @@ export class AlarmFilterComponent {
     if (this.adminOnly) {
       return this.authService.isAdmin();
     }
-    // Ako nije adminOnly, znaci da je obican findAll/findOne pretraga koju sme i Operater
+    // Ako nije adminOnly, znaci da je obican findAll/findOne pretraga koju sme i Operator
     return true; 
   }
   onSearch(event: any) {
